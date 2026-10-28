@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (ui-ux-pro-max → "Developer Tool / IDE" palette + Indigo accent)
+ * Component chỉ dùng token ngữ nghĩa (bg-surface, text-ink-muted, ...),
+ * không hard-code hex.
+ */
+@theme {
+  --color-canvas: #0b1120;
+  --color-surface: #111a2e;
+  --color-surface-raised: #172238;
+  --color-line: #23304a;
+  --color-line-strong: #33415c;
+
+  --color-ink: #e2e8f0;
+  --color-ink-muted: #94a3b8;
+  --color-ink-faint: #64748b;
+
+  --color-accent: #6366f1;
+  --color-accent-strong: #4f46e5;
+  --color-accent-soft: #818cf8;
+  --color-accent-wash: rgb(99 102 241 / 0.12);
+
+  --color-ok: #22c55e;
+  --color-warn: #f59e0b;
+  --color-danger: #ef4444;
+
+  --color-code: #0a0f1c;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 320ms var(--ease-out-soft) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background: rgb(99 102 241 / 0.35);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-soft);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+/* Lưới chấm mờ phía sau hero — gợi cảm giác "dev console" */
+.bg-grid {
+  background-image: radial-gradient(rgb(148 163 184 / 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to bottom, black 30%, transparent 90%);
+}
+
+/* Tôn trọng prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

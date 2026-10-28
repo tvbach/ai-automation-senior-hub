@@ -1,0 +1,29 @@
+{
+  "name": "ai-automation-senior-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal hub: roadmap, playbooks & interview practice for Senior Automation Test AI",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lucide-react": "latest",
+    "next": "^16.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
