@@ -52,7 +52,7 @@ export function InterviewWorkspace({
   const allOpen = filtered.length > 0 && filtered.every((q) => openIds.has(q.id));
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
       {/* ------------------------------------------------ Question list */}
       <section aria-labelledby="questions-title" className="min-w-0 space-y-4">
         <h2 id="questions-title" className="sr-only">

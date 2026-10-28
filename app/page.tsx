@@ -22,7 +22,7 @@ export default function DashboardPage() {
       {/* ------------------------------------------------------------ Hero */}
       <section className="relative" aria-labelledby="hero-title">
         <div className="bg-grid pointer-events-none absolute -inset-x-4 -top-8 h-64" aria-hidden />
-        <div className="relative grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+        <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end">
           <div>
             <Eyebrow>{"// dashboard"}</Eyebrow>
             <h1 id="hero-title" className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -63,7 +63,7 @@ export default function DashboardPage() {
         <h2 id="stats-title" className="sr-only">
           Thống kê tiến độ
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (
             <StatCard key={s.id} stat={s} />
           ))}
@@ -79,7 +79,7 @@ export default function DashboardPage() {
           </h2>
         </div>
 
-        <ol className="grid gap-4 md:grid-cols-3">
+        <ol className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {phases.map((p) => {
             const prog = phaseProgress(p);
             return (
@@ -119,7 +119,7 @@ export default function DashboardPage() {
         aria-labelledby="interview-cta-title"
         className="relative overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/15 via-surface to-surface p-6 sm:p-8"
       >
-        <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
           <div>
             <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-accent-soft">
               <Sparkles className="size-3.5" aria-hidden /> interview hub

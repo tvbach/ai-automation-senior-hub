@@ -88,7 +88,7 @@ export function QuestionAccordion({
               </div>
             </Block>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-ok/25 bg-ok/5 p-4">
                 <p className="flex items-center gap-2 text-sm font-medium text-ok">
                   <KeyRound className="size-4" aria-hidden /> Key points ghi điểm

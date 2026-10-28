@@ -59,6 +59,12 @@
     line-height: 1.6;
   }
 
+  /* Grid item mặc định min-width:auto → nội dung dài (truncate, <pre>) làm tràn ngang.
+     Cho phép co lại để cột tôn trọng chiều rộng màn hình. */
+  .grid > * {
+    min-width: 0;
+  }
+
   ::selection {
     background: rgb(99 102 241 / 0.35);
   }

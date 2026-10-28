@@ -42,7 +42,7 @@ export default async function PhasePage({ params }: Props) {
       </Link>
 
       {/* Header */}
-      <header className="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:items-end">
+      <header className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end">
         <div>
           <Eyebrow>{`// phase_0${phase.order} · ${phase.durationWeeks} tuần`}</Eyebrow>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{phase.title}</h1>
@@ -72,7 +72,7 @@ export default async function PhasePage({ params }: Props) {
         <h2 id="modules-title" className="flex items-center gap-2 text-xl font-semibold tracking-tight">
           <BookOpen className="size-5 text-accent-soft" aria-hidden /> Modules
         </h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {phase.modules.map((m) => {
             const done = m.topics.filter((t) => t.status === "done").length;
             return (
@@ -141,7 +141,7 @@ export default async function PhasePage({ params }: Props) {
         <h2 id="resources-title" className="text-xl font-semibold tracking-tight">
           Tài liệu tham khảo
         </h2>
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {phase.resources.map((r) => (
             <li key={r.url}>
               <a

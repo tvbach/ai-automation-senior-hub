@@ -38,7 +38,7 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
       <div
         role="tablist"
         aria-label="Các giai đoạn lộ trình"
-        className="flex gap-1 overflow-x-auto border-b border-line p-2"
+        className="flex snap-x gap-1 overflow-x-auto border-b border-line p-2 [scrollbar-width:none]"
       >
         {phases.map((p, i) => {
           const selected = i === active;
@@ -57,7 +57,7 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
               onClick={() => setActive(i)}
               onKeyDown={onKeyDown}
               className={cn(
-                "flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3.5 text-sm font-medium transition-colors duration-200",
+                "flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-lg px-3.5 text-sm font-medium whitespace-nowrap transition-colors duration-200",
                 selected ? "bg-accent-wash text-ink ring-1 ring-accent/40" : "text-ink-muted hover:bg-surface-raised hover:text-ink",
               )}
             >
@@ -76,7 +76,7 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
         id={`${baseId}-panel`}
         aria-labelledby={`${baseId}-tab-${active}`}
         tabIndex={0}
-        className="grid animate-fade-up gap-6 p-5 sm:p-6 lg:grid-cols-[1.1fr_1fr]"
+        className="grid animate-fade-up grid-cols-1 gap-6 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]"
       >
         {/* Left: overview */}
         <div className="space-y-5">

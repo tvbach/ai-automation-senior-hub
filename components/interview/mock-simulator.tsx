@@ -290,7 +290,7 @@ function ResultPanel({ result, best, attempts }: { result: GradeResult; best: nu
         </div>
       )}
 
-      <div className="grid gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <FeedbackList title="Điểm mạnh" items={result.strengths} tone="ok" />
         {result.improvements.length > 0 && (
           <FeedbackList title="Cần cải thiện để lên Senior" items={result.improvements} tone="warn" />
