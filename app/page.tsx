@@ -61,7 +61,7 @@ export default function DashboardPage() {
               <li key={p.id}>
                 <Link
                   href={`/roadmap/${p.id}`}
-                  className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-5 transition-colors duration-200 hover:border-accent/50 hover:bg-surface-raised"
+                  className="group flex h-full flex-col rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03] p-5 transition-colors duration-200 hover:border-accent/50 hover:bg-surface-raised"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs text-accent-soft">PHASE 0{p.order}</span>

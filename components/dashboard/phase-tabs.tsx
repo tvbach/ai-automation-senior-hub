@@ -38,7 +38,7 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
   const phaseTopicIds = phase.modules.flatMap((m) => m.topics.map((t) => t.id));
 
   return (
-    <div className="rounded-2xl border border-line bg-surface">
+    <div className="rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03]">
       <div
         role="tablist"
         aria-label="Các giai đoạn lộ trình"

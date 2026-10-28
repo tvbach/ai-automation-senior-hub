@@ -80,7 +80,7 @@ export default async function ModulePage({ params }: Props) {
             <Clock className="size-3.5" aria-hidden /> {mod.topics.length} bài{minutes ? ` · ~${minutes} phút` : ""}
           </p>
         </div>
-        <div className="rounded-2xl border border-line bg-surface p-5">
+        <div className="rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03] p-5">
           <p className="mb-2 text-sm text-ink-muted">Tiến độ module</p>
           <LiveProgress topicIds={topicIds} label={`Tiến độ ${mod.title}`} />
         </div>
@@ -92,7 +92,7 @@ export default async function ModulePage({ params }: Props) {
           <p className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-faint">
             <ListOrdered className="size-3.5" aria-hidden /> Bài học
           </p>
-          <ol className="space-y-1 rounded-2xl border border-line bg-surface p-2">
+          <ol className="space-y-1 rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03] p-2">
             {mod.topics.map((t, i) => (
               <li key={t.id}>
                 <a

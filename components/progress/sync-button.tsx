@@ -65,7 +65,7 @@ export function SyncButton() {
       <dialog
         ref={dialogRef}
         aria-labelledby={`${ids}-title`}
-        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-2xl border border-line-strong bg-surface p-0 text-ink shadow-2xl backdrop:bg-black/60"
+        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-2xl border border-line-strong bg-surface p-0 text-ink shadow-2xl backdrop:bg-slate-900/40 backdrop:backdrop-blur-sm"
       >
         <div className="flex items-start justify-between gap-3 border-b border-line p-5">
           <div>

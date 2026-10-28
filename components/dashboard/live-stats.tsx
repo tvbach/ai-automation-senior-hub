@@ -19,7 +19,7 @@ interface CardProps {
 
 function StatTile({ icon: Icon, label, value, hint, chip }: CardProps) {
   return (
-    <div className="flex flex-col justify-between gap-4 rounded-2xl border border-line bg-surface p-5">
+    <div className="flex flex-col justify-between gap-4 rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03] p-5">
       <p className="flex items-center gap-2 text-sm text-ink-muted">
         <Icon className="size-4 text-accent-soft" aria-hidden /> {label}
       </p>
@@ -50,7 +50,7 @@ export function LiveStats() {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-busy="true">
         {Array.from({ length: 4 }, (_, i) => (
-          <div key={i} className="h-[164px] animate-pulse rounded-2xl border border-line bg-surface" />
+          <div key={i} className="h-[164px] animate-pulse rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03]" />
         ))}
       </div>
     );
@@ -116,7 +116,7 @@ export function ContinueLearning() {
   const allDone = hydrated && next.length === 0;
 
   return (
-    <aside className="rounded-2xl border border-line bg-surface/80 p-5 backdrop-blur" aria-labelledby="continue-title">
+    <aside className="rounded-2xl border border-line bg-surface/80 shadow-sm shadow-slate-900/[0.03] p-5 backdrop-blur" aria-labelledby="continue-title">
       <p id="continue-title" className="flex items-center gap-2 text-sm font-medium">
         <CirclePlay className="size-4 text-accent-soft" aria-hidden /> Học tiếp
       </p>

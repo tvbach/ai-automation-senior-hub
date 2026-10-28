@@ -93,7 +93,7 @@ export function MockSimulator({
   return (
     <section
       aria-labelledby={`${ids}-title`}
-      className="rounded-2xl border border-accent/30 bg-surface shadow-xl shadow-black/20"
+      className="rounded-2xl border border-accent/30 bg-surface shadow-lg shadow-slate-900/5"
     >
       <header className="flex items-center gap-3 border-b border-line p-4 sm:p-5">
         <span className="grid size-9 place-items-center rounded-lg bg-accent-wash text-accent-soft ring-1 ring-accent/30">

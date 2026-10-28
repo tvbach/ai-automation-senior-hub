@@ -77,7 +77,7 @@ export default async function PhasePage({ params }: Props) {
               <Link
                 key={m.id}
                 href={`/roadmap/${phase.id}/${m.id}`}
-                className="group flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5 transition-colors duration-200 hover:border-accent/50 hover:bg-surface-raised sm:p-6"
+                className="group flex flex-col gap-4 rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03] p-5 transition-colors duration-200 hover:border-accent/50 hover:bg-surface-raised sm:p-6"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">

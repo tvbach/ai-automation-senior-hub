@@ -13,7 +13,7 @@ export function RichText({ text }: { text: string }) {
           return (
             <code
               key={i}
-              className="rounded-md border border-line bg-code px-1.5 py-0.5 font-mono text-[0.85em] text-accent-soft [overflow-wrap:anywhere]"
+              className="rounded-md border border-line bg-code px-1.5 py-0.5 font-mono text-[0.85em] text-accent-strong [overflow-wrap:anywhere]"
             >
               {part.slice(1, -1)}
             </code>

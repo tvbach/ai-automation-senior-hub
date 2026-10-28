@@ -32,7 +32,7 @@ function Section({ icon: Icon, title, children }: { icon: LucideIcon; title: str
 
 export function LessonArticle({ index, topic, lesson }: { index: number; topic: Topic; lesson?: Lesson }) {
   return (
-    <article id={topic.id} aria-labelledby={`${topic.id}-title`} className="scroll-mt-24 rounded-2xl border border-line bg-surface">
+    <article id={topic.id} aria-labelledby={`${topic.id}-title`} className="scroll-mt-24 rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03]">
       {/* Header */}
       <header className="space-y-4 border-b border-line p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2">

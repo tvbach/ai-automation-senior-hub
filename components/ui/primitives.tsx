@@ -76,6 +76,6 @@ export function Eyebrow({ children }: { children: React.ReactNode }) {
 
 export function Card({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("rounded-2xl border border-line bg-surface p-5 sm:p-6", className)}>{children}</div>
+    <div className={cn("rounded-2xl border border-line bg-surface shadow-sm shadow-slate-900/[0.03] p-5 sm:p-6", className)}>{children}</div>
   );
 }
