@@ -682,7 +682,7 @@ export const phase1Lessons: Lesson[] = [
         "code": {
           "title": "playwright.config.ts + admin.spec.ts",
           "language": "ts",
-          "code": "// playwright.config.ts (trích)\nprojects: [\n  { name: \"setup\", testMatch: /.*\\.setup\\.ts/ },\n  {\n    name: \"chromium\",\n    use: { ...devices[\"Desktop Chrome\"], storageState: \"playwright/.auth/buyer.json\" }, // mặc định\n    dependencies: [\"setup\"],\n  },\n],\n\n// e2e/admin/orders.spec.ts — file này chạy với vai trò admin\nimport { test, expect } from \"@playwright/test\";\ntest.use({ storageState: \"playwright/.auth/admin.json\" });\n\ntest(\"admin thấy menu quản trị\", async ({ page }) => {\n  await page.goto(\"/admin\");\n  await expect(page.getByRole(\"navigation\", { name: \"Quản trị\" })).toBeVisible();\n});"
+          "code": "// playwright.config.ts\nimport { defineConfig, devices } from \"@playwright/test\";\n\nexport default defineConfig({\n  projects: [\n    { name: \"setup\", testMatch: /.*\\.setup\\.ts/ },\n    {\n      name: \"chromium\",\n      use: { ...devices[\"Desktop Chrome\"], storageState: \"playwright/.auth/buyer.json\" }, // mặc định\n      dependencies: [\"setup\"],\n    },\n  ],\n});\n\n// e2e/admin/orders.spec.ts — file này chạy với vai trò admin\nimport { test, expect } from \"@playwright/test\";\ntest.use({ storageState: \"playwright/.auth/admin.json\" });\n\ntest(\"admin thấy menu quản trị\", async ({ page }) => {\n  await page.goto(\"/admin\");\n  await expect(page.getByRole(\"navigation\", { name: \"Quản trị\" })).toBeVisible();\n});"
         },
         "notes": [
           "Thông tin đăng nhập lấy từ **biến môi trường** (GitHub Secrets trên CI), không bao giờ hard-code trong repo.",
@@ -1016,9 +1016,9 @@ export const phase1Lessons: Lesson[] = [
       {
         "title": "Global setup/teardown bằng project dependencies",
         "code": {
-          "title": "playwright.config.ts (trích)",
+          "title": "playwright.config.ts + global.teardown.ts",
           "language": "ts",
-          "code": "projects: [\n  { name: \"seed\", testMatch: /global\\.setup\\.ts/, teardown: \"cleanup\" },\n  { name: \"cleanup\", testMatch: /global\\.teardown\\.ts/ },\n  { name: \"chromium\", use: { ...devices[\"Desktop Chrome\"] }, dependencies: [\"seed\"] },\n],\n\n// e2e/global.teardown.ts\nimport { test as teardown } from \"@playwright/test\";\nteardown(\"xoá dữ liệu của lần chạy này\", async ({ request }) => {\n  await request.delete(`/api/test/runs/${process.env.TEST_RUN_ID}`);\n});"
+          "code": "// playwright.config.ts\nexport default defineConfig({\n  projects: [\n    { name: \"seed\", testMatch: /global\\.setup\\.ts/, teardown: \"cleanup\" },\n    { name: \"cleanup\", testMatch: /global\\.teardown\\.ts/ },\n    { name: \"chromium\", use: { ...devices[\"Desktop Chrome\"] }, dependencies: [\"seed\"] },\n  ],\n});\n\n// e2e/global.teardown.ts\nimport { test as teardown } from \"@playwright/test\";\nteardown(\"xoá dữ liệu của lần chạy này\", async ({ request }) => {\n  await request.delete(`/api/test/runs/${process.env.TEST_RUN_ID}`);\n});"
         },
         "notes": [
           "Gắn mọi dữ liệu với `TEST_RUN_ID` (ví dụ `github.run_id`) để xoá theo lần chạy mà không ảnh hưởng lần chạy khác."

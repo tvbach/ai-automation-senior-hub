@@ -19,26 +19,39 @@ Yêu cầu Node.js ≥ 20.9.
 
 ```
 app/
-  layout.tsx                 # font (IBM Plex Sans + JetBrains Mono), header, footer
-  globals.css                # Tailwind v4 + design tokens (@theme)
-  page.tsx                   # Dashboard: hero, stats, 3 phase, tabs
-  roadmap/[phaseId]/page.tsx # Trang chi tiết từng giai đoạn (static params)
-  interview/page.tsx         # Interview Hub + Mock Interview Simulator
-  not-found.tsx
+  layout.tsx                            # font, header, ProgressProvider
+  globals.css                           # Tailwind v4 + design tokens (@theme)
+  page.tsx                              # Dashboard: stats thật, "Học tiếp", 3 phase
+  roadmap/[phaseId]/page.tsx            # Trang giai đoạn
+  roadmap/[phaseId]/[moduleId]/page.tsx # Trang module = danh sách bài học
+  interview/page.tsx                    # Interview Hub + Mock Interview Simulator
+  api/progress/route.ts                 # API đồng bộ tiến độ (Redis + PIN)
 components/
   site-header.tsx
   dashboard/  stat-card.tsx · phase-tabs.tsx
   interview/  interview-workspace.tsx · question-accordion.tsx · mock-simulator.tsx
   ui/         primitives.tsx · code-block.tsx
-data/content.ts              # TOÀN BỘ nội dung: phases, modules, stats, câu hỏi, rubric
-lib/grader.ts                # Chấm điểm giả lập theo rubric (deterministic, chạy client)
-lib/cn.ts
+components/progress/          # ProgressProvider, SyncButton (PIN), StatusControl, LiveProgress
+components/lesson/            # LessonArticle, LessonChecklist
+data/content.ts               # phases, modules, topics (id ổn định), câu hỏi, rubric
+data/lessons/                 # 41 bài học (phase-1/2/3.ts)
+lib/progress.ts               # mô hình tiến độ, merge, streak, thống kê (pure)
+lib/redis.ts                  # client Upstash REST tối giản
+lib/grader.ts                 # chấm điểm mock interview theo rubric
 ```
 
-## Chỉnh nội dung
+## Học & theo dõi tiến độ
 
-- Cập nhật tiến độ: đổi `status` của từng topic trong `data/content.ts` (`done` | `in-progress` | `todo`). Thẻ “Tiến độ lộ trình” tự tính lại.
-- Thêm câu hỏi: thêm object vào `interviewQuestions`, kèm `rubric` (concept + keywords, không cần dấu tiếng Việt).
+- Mỗi phase có các module; mỗi module (`/roadmap/[phaseId]/[moduleId]`) gồm các bài học: giải thích cho người mới, ví dụ đời thường, code mẫu, lỗi hay gặp, bài tập có lời giải, checklist tự kiểm tra, câu trả lời phỏng vấn mẫu.
+- Đánh dấu trạng thái mỗi bài (Chưa học / Đang học / Hoàn thành). Dashboard tính tiến độ, chuỗi ngày học, điểm mock interview từ dữ liệu thật — không có số liệu fix cứng.
+- Nội dung bài học: `data/lessons/phase-*.ts` (kiểu `Lesson` trong `data/lessons/types.ts`). Thêm câu hỏi phỏng vấn: `interviewQuestions` trong `data/content.ts`.
+- **Không đổi `id` của topic** sau khi đã dùng — đó là khoá lưu tiến độ.
+
+## Đồng bộ nhiều thiết bị
+
+- Tiến độ lưu ngay trên trình duyệt (localStorage), rồi đồng bộ lên `/api/progress` (Upstash Redis qua REST).
+- Env tự nhận: `KV_REST_API_URL` / `KV_REST_API_TOKEN` (Vercel Marketplace → Upstash) hoặc `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`. Không có env → chế độ chỉ-local.
+- Ghi cần PIN (tạo lần đầu ngay trong app, nút đám mây trên header). PIN được hash bằng scrypt; sai 10 lần → khoá 15 phút. Server **merge** theo timestamp từng topic nên điện thoại và máy tính sửa song song không ghi đè nhau.
 
 ## Chấm điểm Mock Interview
 
