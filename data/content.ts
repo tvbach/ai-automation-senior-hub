@@ -30,7 +30,7 @@ export interface Module {
 
 export interface CodeSample {
   title: string;
-  language: "ts" | "yaml" | "ruby" | "bash" | "json";
+  language: "ts" | "yaml" | "ruby" | "bash" | "json" | "sql";
   code: string;
 }
 
