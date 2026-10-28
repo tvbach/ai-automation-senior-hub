@@ -28,7 +28,7 @@ app/
   api/progress/route.ts                 # API đồng bộ tiến độ (Redis + PIN)
 components/
   site-header.tsx
-  dashboard/  stat-card.tsx · phase-tabs.tsx
+  dashboard/  live-stats.tsx · phase-tabs.tsx
   interview/  interview-workspace.tsx · question-accordion.tsx · mock-simulator.tsx
   ui/         primitives.tsx · code-block.tsx
 components/progress/          # ProgressProvider, SyncButton (PIN), StatusControl, LiveProgress
