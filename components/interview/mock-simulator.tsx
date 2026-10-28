@@ -6,6 +6,7 @@ import type { InterviewQuestion } from "@/data/content";
 import { gradeAnswer, type GradeResult, type Verdict } from "@/lib/grader";
 import { Badge, DifficultyBadge } from "@/components/ui/primitives";
 import { cn } from "@/lib/cn";
+import { useProgress } from "@/components/progress/progress-provider";
 
 const MIN_WORDS = 15;
 const THINKING_STEPS = [
@@ -14,7 +15,6 @@ const THINKING_STEPS = [
   "Tổng hợp feedback…",
 ];
 
-type Attempt = { questionId: string; score: number; at: number };
 
 const VERDICT_TONE: Record<Verdict, "ok" | "accent" | "warn" | "danger"> = {
   "Strong Hire": "ok",
@@ -39,7 +39,7 @@ export function MockSimulator({
   const [status, setStatus] = useState<"idle" | "grading" | "done">("idle");
   const [step, setStep] = useState(0);
   const [result, setResult] = useState<GradeResult | null>(null);
-  const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const { state: progress, addAttempt } = useProgress();
   const timers = useRef<number[]>([]);
 
   const wordCount = answer.trim() ? answer.trim().split(/\s+/).length : 0;
@@ -75,7 +75,7 @@ export function MockSimulator({
         const r = gradeAnswer(question, answer);
         setResult(r);
         setStatus("done");
-        setAttempts((prev) => [{ questionId: question.id, score: r.score, at: Date.now() }, ...prev].slice(0, 20));
+        addAttempt(question.id, r.score);
       }, THINKING_STEPS.length * 450 + 150),
     );
   }
@@ -87,7 +87,7 @@ export function MockSimulator({
     setStatus("idle");
   }
 
-  const history = attempts.filter((a) => a.questionId === question.id);
+  const history = progress.attempts.filter((a) => a.questionId === question.id);
   const best = history.length ? Math.max(...history.map((a) => a.score)) : null;
 
   return (
@@ -103,7 +103,7 @@ export function MockSimulator({
           <h2 id={`${ids}-title`} className="font-semibold">
             Mock Interview Simulator
           </h2>
-          <p className="text-xs text-ink-muted">Chấm theo rubric · chạy local, không gửi dữ liệu đi đâu</p>
+          <p className="text-xs text-ink-muted">Chấm theo rubric ngay trên trình duyệt · chỉ lưu điểm vào tiến độ</p>
         </div>
       </header>
 

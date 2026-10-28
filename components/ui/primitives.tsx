@@ -1,5 +1,4 @@
-import { CircleCheck, CircleDashed, CircleDot } from "lucide-react";
-import type { Difficulty, TopicStatus } from "@/data/content";
+import type { Difficulty } from "@/data/content";
 import { cn } from "@/lib/cn";
 
 /* ---------------------------------------------------------------- Progress */
@@ -68,23 +67,6 @@ export function Badge({
 export function DifficultyBadge({ level }: { level: Difficulty }) {
   const tone = level === "Senior" ? "accent" : level === "Staff" ? "warn" : "danger";
   return <Badge tone={tone}>{level}</Badge>;
-}
-
-/* ------------------------------------------------------------ Topic status */
-const STATUS = {
-  done: { icon: CircleCheck, label: "Hoàn thành", cls: "text-ok" },
-  "in-progress": { icon: CircleDot, label: "Đang học", cls: "text-accent-soft" },
-  todo: { icon: CircleDashed, label: "Chưa bắt đầu", cls: "text-ink-faint" },
-} as const;
-
-export function TopicStatusIcon({ status }: { status: TopicStatus }) {
-  const { icon: Icon, label, cls } = STATUS[status];
-  return (
-    <span className={cn("inline-flex shrink-0", cls)} title={label}>
-      <Icon className="size-4" aria-hidden />
-      <span className="sr-only">{label}</span>
-    </span>
-  );
 }
 
 /* ------------------------------------------------------- Section headings */

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, BookOpen, SquareCheck, ExternalLink, Flag, Lightbulb } from "lucide-react";
-import { getPhase, phaseProgress, phases } from "@/data/content";
+import { ArrowLeft, ArrowRight, BookOpen, Clock, ExternalLink, Flag, Lightbulb, SquareCheck } from "lucide-react";
+import { getPhase, phases } from "@/data/content";
+import { getLesson } from "@/data/lessons";
 import { CodeBlock } from "@/components/ui/code-block";
-import { Badge, Card, Eyebrow, ProgressBar, TopicStatusIcon } from "@/components/ui/primitives";
+import { Badge, Card, Eyebrow } from "@/components/ui/primitives";
+import { LiveCount, LiveProgress } from "@/components/progress/live-progress";
+import { LiveStatusIcon } from "@/components/progress/status-control";
 
 type Props = { params: Promise<{ phaseId: string }> };
 
@@ -27,7 +30,7 @@ export default async function PhasePage({ params }: Props) {
   const phase = getPhase(phaseId);
   if (!phase) notFound();
 
-  const progress = phaseProgress(phase);
+  const topicIds = phase.modules.flatMap((m) => m.topics.map((t) => t.id));
   const idx = phases.findIndex((p) => p.id === phase.id);
   const prev = phases[idx - 1];
   const next = phases[idx + 1];
@@ -48,15 +51,9 @@ export default async function PhasePage({ params }: Props) {
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{phase.title}</h1>
           <p className="mt-3 max-w-2xl text-ink-muted text-pretty">{phase.tagline}</p>
         </div>
-        <Card className="space-y-3">
-          <div className="flex items-baseline justify-between">
-            <span className="text-sm text-ink-muted">Tiến độ</span>
-            <span className="font-mono text-2xl font-semibold">{progress.percent}%</span>
-          </div>
-          <ProgressBar value={progress.percent} label={`Tiến độ ${phase.shortTitle}`} />
-          <p className="font-mono text-xs text-ink-faint">
-            {progress.done} done · {progress.inProgress} in-progress · {progress.total - progress.done - progress.inProgress} todo
-          </p>
+        <Card className="space-y-2">
+          <span className="text-sm text-ink-muted">Tiến độ của bạn</span>
+          <LiveProgress topicIds={topicIds} label={`Tiến độ ${phase.shortTitle}`} />
         </Card>
       </header>
 
@@ -73,33 +70,46 @@ export default async function PhasePage({ params }: Props) {
           <BookOpen className="size-5 text-accent-soft" aria-hidden /> Modules
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {phase.modules.map((m) => {
-            const done = m.topics.filter((t) => t.status === "done").length;
+          {phase.modules.map((m, mi) => {
+            const ids = m.topics.map((t) => t.id);
+            const minutes = m.topics.reduce((sum, t) => sum + (getLesson(t.id)?.minutes ?? 0), 0);
             return (
-              <Card key={m.id} className="flex flex-col gap-4">
+              <Link
+                key={m.id}
+                href={`/roadmap/${phase.id}/${m.id}`}
+                className="group flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5 transition-colors duration-200 hover:border-accent/50 hover:bg-surface-raised sm:p-6"
+              >
                 <div>
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold">{m.title}</h3>
-                    <Badge tone={done === m.topics.length ? "ok" : "neutral"}>
-                      {done}/{m.topics.length}
-                    </Badge>
+                    <span className="font-mono text-xs text-accent-soft">
+                      MODULE {phase.order}.{mi + 1}
+                    </span>
+                    <LiveCount topicIds={ids} />
                   </div>
+                  <h3 className="mt-2 font-semibold">{m.title}</h3>
                   <p className="mt-1.5 text-sm text-ink-muted">{m.summary}</p>
                 </div>
                 <ul className="space-y-2.5">
                   {m.topics.map((t) => (
-                    <li key={t.title} className="flex gap-2.5">
+                    <li key={t.id} className="flex gap-2.5">
                       <span className="mt-1">
-                        <TopicStatusIcon status={t.status} />
+                        <LiveStatusIcon topicId={t.id} />
                       </span>
-                      <div>
-                        <p className={t.status === "done" ? "text-sm text-ink-muted" : "text-sm text-ink"}>{t.title}</p>
-                        {t.note && <p className="mt-0.5 text-xs text-ink-faint">{t.note}</p>}
-                      </div>
+                      <p className="text-sm text-ink">{t.title}</p>
                     </li>
                   ))}
                 </ul>
-              </Card>
+                <span className="mt-auto flex items-center justify-between gap-3 border-t border-line pt-4 text-sm">
+                  <span className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-faint">
+                    <Clock className="size-3.5" aria-hidden />
+                    {m.topics.length} bài{minutes ? ` · ~${minutes} phút` : ""}
+                  </span>
+                  <span className="inline-flex items-center gap-1 font-medium text-accent-soft">
+                    Vào học
+                    <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
+                  </span>
+                </span>
+              </Link>
             );
           })}
         </div>

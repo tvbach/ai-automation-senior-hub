@@ -14,8 +14,9 @@
 export type TopicStatus = "done" | "in-progress" | "todo";
 
 export interface Topic {
+  /** ID ổn định — dùng làm khoá lưu tiến độ, KHÔNG đổi sau khi đã dùng */
+  id: string;
   title: string;
-  status: TopicStatus;
   /** Ghi chú ngắn: tại sao topic này quan trọng ở level Senior */
   note?: string;
 }
@@ -56,16 +57,6 @@ export interface Phase {
   resources: Resource[];
 }
 
-export interface Stat {
-  id: string;
-  label: string;
-  value: string;
-  hint: string;
-  trend: { direction: "up" | "down" | "flat"; label: string };
-  /** Với "down", giảm là tốt (vd: flaky rate) */
-  goodWhen: "up" | "down";
-}
-
 export type QuestionCategory =
   | "Playwright & Architecture"
   | "AI-Driven Testing"
@@ -98,7 +89,7 @@ export interface InterviewQuestion {
 }
 
 /* ============================================================================
- * 2. PROFILE & STATS (giả lập)
+ * 2. PROFILE
  * ========================================================================== */
 
 export const profile = {
@@ -108,40 +99,6 @@ export const profile = {
   target: "Senior Automation Test AI / AI SDET",
   weeklyHours: 12,
 };
-
-/** Thẻ "Tiến độ lộ trình" được tính từ dữ liệu phases — xem getStats() */
-const simulatedStats: Stat[] = [
-  {
-    id: "streak",
-    label: "Chuỗi ngày học",
-    value: "12 ngày",
-    hint: "Kỷ lục: 21 ngày",
-    trend: { direction: "up", label: "+3 ngày" },
-    goodWhen: "up",
-  },
-  {
-    id: "mock",
-    label: "Điểm Mock Interview TB",
-    value: "72/100",
-    hint: "8 phiên luyện · mục tiêu ≥ 85",
-    trend: { direction: "up", label: "+9 điểm" },
-    goodWhen: "up",
-  },
-  {
-    id: "flaky",
-    label: "Flaky rate (lab repo)",
-    value: "1.8%",
-    hint: "Trên 420 test chạy CI · mục tiêu < 1%",
-    trend: { direction: "down", label: "-2.4% sau quarantine" },
-    goodWhen: "down",
-  },
-];
-
-export const weeklyFocus = [
-  "Hoàn thiện Fixture layer + auth storageState cho lab repo",
-  "Viết ADR: chọn LLM fallback hay heuristic cho self-healing locator",
-  "Luyện 3 câu System Design trong Interview Hub (mục tiêu ≥ 80 điểm)",
-];
 
 /* ============================================================================
  * 3. ROADMAP — 3 PHASES
@@ -174,10 +131,10 @@ export const phases: Phase[] = [
         summary:
           "Phân bổ test theo risk và chi phí phản hồi. Senior được đánh giá bằng quyết định ‘KHÔNG test gì ở E2E’.",
         topics: [
-          { title: "Test Pyramid vs Testing Trophy vs Honeycomb", status: "done", note: "Biết khi nào mỗi mô hình hợp lý (monolith vs microservices)" },
-          { title: "Risk-based testing & coverage matrix", status: "done" },
-          { title: "Shift-left: test trong PR, preview env per branch", status: "in-progress" },
-          { title: "Định nghĩa SLO cho test suite (thời gian, flaky rate)", status: "todo", note: "Ví dụ: P95 PR pipeline < 10 phút, flaky < 1%" },
+          { id: "pyramid-models", title: "Test Pyramid vs Testing Trophy vs Honeycomb", note: "Biết khi nào mỗi mô hình hợp lý (monolith vs microservices)" },
+          { id: "risk-based", title: "Risk-based testing & coverage matrix" },
+          { id: "shift-left", title: "Shift-left: test trong PR, preview env per branch" },
+          { id: "suite-slo", title: "Định nghĩa SLO cho test suite (thời gian, flaky rate)", note: "Ví dụ: P95 PR pipeline < 10 phút, flaky < 1%" },
         ],
       },
       {
@@ -186,11 +143,11 @@ export const phases: Phase[] = [
         summary:
           "Fixtures thay cho before/after hooks, POM có giới hạn, locator theo accessibility.",
         topics: [
-          { title: "Custom fixtures (test.extend) & fixture scopes", status: "done" },
-          { title: "Page Object vs Screenplay vs Component Object", status: "done" },
-          { title: "Locator strategy: getByRole / getByTestId / không dùng XPath", status: "done" },
-          { title: "Auth: storageState per role, setup project", status: "in-progress" },
-          { title: "Network mocking: page.route, HAR replay", status: "todo" },
+          { id: "fixtures", title: "Custom fixtures (test.extend) & fixture scopes" },
+          { id: "object-patterns", title: "Page Object vs Screenplay vs Component Object" },
+          { id: "locators", title: "Locator strategy: getByRole / getByTestId / không dùng XPath" },
+          { id: "auth-state", title: "Auth: storageState per role, setup project" },
+          { id: "network-mocking", title: "Network mocking: page.route, HAR replay" },
         ],
       },
       {
@@ -198,9 +155,9 @@ export const phases: Phase[] = [
         title: "Test Data & Isolation",
         summary: "Parallel-safe data là điều kiện tiên quyết để scale và giảm flaky.",
         topics: [
-          { title: "Data factory + API seeding (không seed qua UI)", status: "done" },
-          { title: "Tenant/worker isolation với workerIndex", status: "in-progress" },
-          { title: "Cleanup strategy: teardown vs TTL vs ephemeral DB", status: "todo" },
+          { id: "data-factory", title: "Data factory + API seeding (không seed qua UI)" },
+          { id: "worker-isolation", title: "Tenant/worker isolation với workerIndex" },
+          { id: "cleanup", title: "Cleanup strategy: teardown vs TTL vs ephemeral DB" },
         ],
       },
       {
@@ -208,9 +165,9 @@ export const phases: Phase[] = [
         title: "Next.js Component & Contract Testing",
         summary: "Tận dụng thế mạnh Next.js của bạn để test đúng layer.",
         topics: [
-          { title: "Playwright Component Testing vs Vitest + Testing Library", status: "in-progress" },
-          { title: "Test Server Components & Server Actions qua integration layer", status: "todo" },
-          { title: "Contract testing (Pact) / schema validation với Zod", status: "todo" },
+          { id: "ct-vs-vitest", title: "Playwright Component Testing vs Vitest + Testing Library" },
+          { id: "rsc-server-actions", title: "Test Server Components & Server Actions qua integration layer" },
+          { id: "contract-testing", title: "Contract testing (Pact) / schema validation với Zod" },
         ],
       },
     ],
@@ -295,10 +252,10 @@ export { expect };`,
         title: "LLM Test Generation Pipeline",
         summary: "Từ user story / OpenAPI spec sinh test có cấu trúc, không phải ‘chat ra code’.",
         topics: [
-          { title: "Structured output (JSON schema) cho test plan", status: "in-progress", note: "Ép LLM trả JSON → validate bằng Zod trước khi render code" },
-          { title: "Context engineering: đưa POM + fixtures hiện có vào prompt", status: "in-progress" },
-          { title: "Validation loop: tsc → lint → dry-run → self-repair", status: "todo" },
-          { title: "Evals: golden set để đo chất lượng test sinh ra", status: "todo" },
+          { id: "structured-output", title: "Structured output (JSON schema) cho test plan", note: "Ép LLM trả JSON → validate bằng Zod trước khi render code" },
+          { id: "context-engineering", title: "Context engineering: đưa POM + fixtures hiện có vào prompt" },
+          { id: "validation-loop", title: "Validation loop: tsc → lint → dry-run → self-repair" },
+          { id: "gen-evals", title: "Evals: golden set để đo chất lượng test sinh ra" },
         ],
       },
       {
@@ -306,10 +263,10 @@ export { expect };`,
         title: "Self-Healing Locators",
         summary: "Giảm chi phí maintain mà không che giấu bug thật.",
         topics: [
-          { title: "Fingerprint element: role, name, text, attributes, vị trí DOM", status: "done" },
-          { title: "Similarity scoring + confidence threshold", status: "in-progress" },
-          { title: "LLM fallback với DOM snapshot đã rút gọn (token budget)", status: "todo" },
-          { title: "Healing → tạo PR sửa locator, không auto-commit", status: "todo", note: "Human-in-the-loop là điểm ăn tiền trong phỏng vấn" },
+          { id: "fingerprint", title: "Fingerprint element: role, name, text, attributes, vị trí DOM" },
+          { id: "similarity-threshold", title: "Similarity scoring + confidence threshold" },
+          { id: "llm-fallback", title: "LLM fallback với DOM snapshot đã rút gọn (token budget)" },
+          { id: "healing-pr", title: "Healing → tạo PR sửa locator, không auto-commit", note: "Human-in-the-loop là điểm ăn tiền trong phỏng vấn" },
         ],
       },
       {
@@ -317,9 +274,9 @@ export { expect };`,
         title: "AI Visual & Functional Regression",
         summary: "Phân biệt thay đổi có chủ đích và regression bằng AI thay vì pixel diff thuần.",
         topics: [
-          { title: "Pixel diff vs perceptual diff vs AI semantic diff", status: "todo" },
-          { title: "Ổn định snapshot: mask dynamic content, font, animation", status: "done" },
-          { title: "Vision model để phân loại diff (layout / content / noise)", status: "todo" },
+          { id: "diff-types", title: "Pixel diff vs perceptual diff vs AI semantic diff" },
+          { id: "snapshot-stability", title: "Ổn định snapshot: mask dynamic content, font, animation" },
+          { id: "vision-classify", title: "Vision model để phân loại diff (layout / content / noise)" },
         ],
       },
       {
@@ -327,9 +284,9 @@ export { expect };`,
         title: "Prompt Engineering cho QA",
         summary: "Prompt có cấu trúc, versioned và được test như code.",
         topics: [
-          { title: "Prompt template + few-shot từ test chuẩn của team", status: "done" },
-          { title: "Edge-case taxonomy: boundary, negative, auth, race, i18n", status: "in-progress" },
-          { title: "Prompt versioning & regression test cho prompt", status: "todo" },
+          { id: "prompt-templates", title: "Prompt template + few-shot từ test chuẩn của team" },
+          { id: "edge-case-taxonomy", title: "Edge-case taxonomy: boundary, negative, auth, race, i18n" },
+          { id: "prompt-versioning", title: "Prompt versioning & regression test cho prompt" },
         ],
       },
     ],
@@ -444,10 +401,10 @@ export async function resilientLocator(
         title: "Pipeline Architecture",
         summary: "Đúng test, đúng thời điểm, đúng chi phí.",
         topics: [
-          { title: "GitHub Actions matrix + sharding + merge reports", status: "done" },
-          { title: "Test Impact Analysis (chạy test theo file thay đổi)", status: "todo" },
-          { title: "Ephemeral preview environment per PR", status: "in-progress" },
-          { title: "Caching: browsers, node_modules, Docker layers", status: "done" },
+          { id: "gha-sharding", title: "GitHub Actions matrix + sharding + merge reports" },
+          { id: "test-impact", title: "Test Impact Analysis (chạy test theo file thay đổi)" },
+          { id: "preview-env", title: "Ephemeral preview environment per PR" },
+          { id: "ci-caching", title: "Caching: browsers, node_modules, Docker layers" },
         ],
       },
       {
@@ -455,10 +412,10 @@ export async function resilientLocator(
         title: "Quality Gates",
         summary: "Gate phải chặn đúng risk, không chặn nhầm vì noise.",
         topics: [
-          { title: "Gate rules: block / warn / info theo mức độ", status: "in-progress" },
-          { title: "Flaky budget & auto-quarantine có owner + SLA", status: "todo" },
-          { title: "Performance budget (Lighthouse CI, k6 smoke)", status: "todo" },
-          { title: "Security scan: dependency, secret, DAST cơ bản", status: "todo" },
+          { id: "gate-rules", title: "Gate rules: block / warn / info theo mức độ" },
+          { id: "flaky-budget", title: "Flaky budget & auto-quarantine có owner + SLA" },
+          { id: "perf-budget", title: "Performance budget (Lighthouse CI, k6 smoke)" },
+          { id: "security-scan", title: "Security scan: dependency, secret, DAST cơ bản" },
         ],
       },
       {
@@ -466,10 +423,10 @@ export async function resilientLocator(
         title: "Test Observability & Analytics",
         summary: "Không đo được thì không cải thiện được.",
         topics: [
-          { title: "Thu thập kết quả: JUnit/JSON → DB (Postgres/BigQuery)", status: "todo" },
-          { title: "Flakiness score theo cửa sổ thời gian", status: "todo", note: "Flip rate trên cùng commit là tín hiệu mạnh nhất" },
-          { title: "AI failure triage: cluster lỗi theo stack trace + log", status: "todo" },
-          { title: "Dashboard: Grafana / Next.js nội bộ", status: "todo" },
+          { id: "results-ingestion", title: "Thu thập kết quả: JUnit/JSON → DB (Postgres/BigQuery)" },
+          { id: "flakiness-score", title: "Flakiness score theo cửa sổ thời gian", note: "Flip rate trên cùng commit là tín hiệu mạnh nhất" },
+          { id: "ai-triage", title: "AI failure triage: cluster lỗi theo stack trace + log" },
+          { id: "quality-dashboard", title: "Dashboard: Grafana / Next.js nội bộ" },
         ],
       },
     ],
@@ -973,37 +930,15 @@ export function getPhase(id: string): Phase | undefined {
   return phases.find((p) => p.id === id);
 }
 
-function summarize(topics: Topic[]) {
-  const done = topics.filter((t) => t.status === "done").length;
-  const inProgress = topics.filter((t) => t.status === "in-progress").length;
-  return {
-    total: topics.length,
-    done,
-    inProgress,
-    percent: topics.length ? Math.round((done / topics.length) * 100) : 0,
-  };
+export function getModule(phaseId: string, moduleId: string) {
+  const phase = getPhase(phaseId);
+  const mod = phase?.modules.find((m) => m.id === moduleId);
+  return phase && mod ? { phase, module: mod } : undefined;
 }
 
-export function phaseProgress(phase: Phase) {
-  return summarize(phase.modules.flatMap((m) => m.topics));
-}
-
-export function overallProgress() {
-  return summarize(phases.flatMap((p) => p.modules.flatMap((m) => m.topics)));
-}
-
-/** Stats cho Dashboard: 1 thẻ tính thật từ roadmap + 3 thẻ giả lập */
-export function getStats(): Stat[] {
-  const overall = overallProgress();
-  return [
-    {
-      id: "progress",
-      label: "Tiến độ lộ trình",
-      value: `${overall.percent}%`,
-      hint: `${overall.done} / ${overall.total} topic hoàn thành · ${overall.inProgress} đang học`,
-      trend: { direction: "up", label: "+6% tuần này" },
-      goodWhen: "up",
-    },
-    ...simulatedStats,
-  ];
-}
+/** Danh sách phẳng mọi topic theo thứ tự lộ trình — dùng cho tiến độ & "học tiếp" */
+export const allTopics = phases.flatMap((phase) =>
+  phase.modules.flatMap((mod) =>
+    mod.topics.map((topic) => ({ topic, module: mod, phase })),
+  ),
+);

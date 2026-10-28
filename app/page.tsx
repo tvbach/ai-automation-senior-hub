@@ -1,20 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, CalendarClock, ChevronRight, MessagesSquare, Sparkles } from "lucide-react";
-import {
-  getStats,
-  interviewQuestions,
-  phaseProgress,
-  phases,
-  profile,
-  questionCategories,
-  weeklyFocus,
-} from "@/data/content";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { ArrowRight, ChevronRight, MessagesSquare, Sparkles } from "lucide-react";
+import { interviewQuestions, phases, profile, questionCategories } from "@/data/content";
+import { ContinueLearning, LiveStats } from "@/components/dashboard/live-stats";
 import { PhaseTabs } from "@/components/dashboard/phase-tabs";
-import { Eyebrow, ProgressBar } from "@/components/ui/primitives";
+import { LiveProgress } from "@/components/progress/live-progress";
+import { Eyebrow } from "@/components/ui/primitives";
 
 export default function DashboardPage() {
-  const stats = getStats();
   const totalWeeks = phases.reduce((sum, p) => sum + p.durationWeeks, 0);
 
   return (
@@ -41,20 +33,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-line bg-surface/80 p-5 backdrop-blur" aria-labelledby="focus-title">
-            <p id="focus-title" className="flex items-center gap-2 text-sm font-medium">
-              <CalendarClock className="size-4 text-accent-soft" aria-hidden /> Focus tuần này
-              <span className="ml-auto font-mono text-xs text-ink-faint">{profile.weeklyHours}h/tuần</span>
-            </p>
-            <ol className="mt-3 space-y-2.5">
-              {weeklyFocus.map((f, i) => (
-                <li key={f} className="flex gap-3 text-sm text-ink-muted">
-                  <span className="font-mono text-xs leading-6 text-accent-soft">0{i + 1}</span>
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ol>
-          </aside>
+          <ContinueLearning />
         </div>
       </section>
 
@@ -63,11 +42,7 @@ export default function DashboardPage() {
         <h2 id="stats-title" className="sr-only">
           Thống kê tiến độ
         </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((s) => (
-            <StatCard key={s.id} stat={s} />
-          ))}
-        </div>
+        <LiveStats />
       </section>
 
       {/* -------------------------------------------------------- Timeline */}
@@ -81,7 +56,7 @@ export default function DashboardPage() {
 
         <ol className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {phases.map((p) => {
-            const prog = phaseProgress(p);
+            const ids = p.modules.flatMap((m) => m.topics.map((t) => t.id));
             return (
               <li key={p.id}>
                 <Link
@@ -94,12 +69,8 @@ export default function DashboardPage() {
                   </div>
                   <h3 className="mt-3 font-semibold leading-snug">{p.title}</h3>
                   <p className="mt-2 line-clamp-3 flex-1 text-sm text-ink-muted">{p.tagline}</p>
-                  <div className="mt-5 space-y-2">
-                    <div className="flex justify-between font-mono text-xs text-ink-muted">
-                      <span>{prog.done}/{prog.total} topic</span>
-                      <span>{prog.percent}%</span>
-                    </div>
-                    <ProgressBar value={prog.percent} label={`Tiến độ phase ${p.order}`} />
+                  <div className="mt-5">
+                    <LiveProgress topicIds={ids} label={`Tiến độ phase ${p.order}`} variant="compact" />
                   </div>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent-soft">
                     Mở giai đoạn

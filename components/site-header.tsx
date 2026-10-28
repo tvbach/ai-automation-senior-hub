@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bot, LayoutDashboard, MessagesSquare } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { SyncButton } from "@/components/progress/sync-button";
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, match: (p: string) => p === "/" || p.startsWith("/roadmap") },
-  { href: "/interview", label: "Interview Hub", icon: MessagesSquare, match: (p: string) => p.startsWith("/interview") },
+  { href: "/", label: "Dashboard", short: "Lộ trình", icon: LayoutDashboard, match: (p: string) => p === "/" || p.startsWith("/roadmap") },
+  { href: "/interview", label: "Interview Hub", short: "Phỏng vấn", icon: MessagesSquare, match: (p: string) => p.startsWith("/interview") },
 ];
 
 export function SiteHeader() {
@@ -25,9 +26,10 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav aria-label="Điều hướng chính">
+        <div className="flex min-w-0 items-center gap-2">
+          <nav aria-label="Điều hướng chính">
           <ul className="flex items-center gap-1 rounded-xl border border-line bg-surface p-1">
-            {NAV.map(({ href, label, icon: Icon, match }) => {
+            {NAV.map(({ href, label, short, icon: Icon, match }) => {
               const active = match(pathname);
               return (
                 <li key={href}>
@@ -42,13 +44,16 @@ export function SiteHeader() {
                     )}
                   >
                     <Icon className="size-4" aria-hidden />
-                    <span>{label}</span>
+                    <span className="hidden sm:inline">{label}</span>
+                    <span className="sm:hidden">{short}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
+        <SyncButton />
+        </div>
       </div>
     </header>
   );

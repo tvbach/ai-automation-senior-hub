@@ -2,9 +2,12 @@
 
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
-import { ArrowRight, Flag, Lightbulb, Target } from "lucide-react";
-import { phaseProgress, type Phase } from "@/data/content";
-import { ProgressBar, TopicStatusIcon } from "@/components/ui/primitives";
+import { ArrowRight, ChevronRight, Flag, Lightbulb, Target } from "lucide-react";
+import type { Phase } from "@/data/content";
+import { topicStatus } from "@/lib/progress";
+import { useProgress } from "@/components/progress/progress-provider";
+import { LiveProgress } from "@/components/progress/live-progress";
+import { LiveStatusIcon } from "@/components/progress/status-control";
 import { cn } from "@/lib/cn";
 
 /**
@@ -13,6 +16,7 @@ import { cn } from "@/lib/cn";
  */
 export function PhaseTabs({ phases }: { phases: Phase[] }) {
   const [active, setActive] = useState(0);
+  const { state, hydrated } = useProgress();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const baseId = useId();
 
@@ -31,7 +35,7 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
   }
 
   const phase = phases[active];
-  const progress = phaseProgress(phase);
+  const phaseTopicIds = phase.modules.flatMap((m) => m.topics.map((t) => t.id));
 
   return (
     <div className="rounded-2xl border border-line bg-surface">
@@ -109,35 +113,46 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
 
         {/* Right: modules + progress */}
         <div className="space-y-4">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs text-ink-faint">{phase.durationWeeks} tuần · {progress.total} topic</p>
-              <p className="mt-0.5 font-mono text-2xl font-semibold">{progress.percent}%</p>
-            </div>
-            <p className="text-right font-mono text-xs text-ink-muted">
-              {progress.done} done · {progress.inProgress} in-progress
-            </p>
-          </div>
-          <ProgressBar value={progress.percent} label={`Tiến độ ${phase.shortTitle}`} />
+          <p className="font-mono text-xs text-ink-faint">
+            {phase.durationWeeks} tuần · {phase.modules.length} module · {phaseTopicIds.length} topic
+          </p>
+          <LiveProgress topicIds={phaseTopicIds} label={`Tiến độ ${phase.shortTitle}`} />
 
-          <ul className="divide-y divide-line rounded-xl border border-line">
+          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line">
             {phase.modules.map((m) => {
-              const done = m.topics.filter((t) => t.status === "done").length;
-              const current = m.topics.find((t) => t.status === "in-progress") ?? m.topics.find((t) => t.status === "todo");
+              const ids = m.topics.map((t) => t.id);
+              const done = ids.filter((id) => topicStatus(state, id) === "done").length;
+              const next =
+                m.topics.find((t) => topicStatus(state, t.id) === "in-progress") ??
+                m.topics.find((t) => topicStatus(state, t.id) === "todo");
               return (
-                <li key={m.id} className="flex items-start justify-between gap-3 p-3.5">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{m.title}</p>
-                    {current && (
-                      <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-muted">
-                        <TopicStatusIcon status={current.status} />
-                        <span className="truncate">{current.title}</span>
-                      </p>
-                    )}
-                  </div>
-                  <span className="shrink-0 font-mono text-xs text-ink-faint">
-                    {done}/{m.topics.length}
-                  </span>
+                <li key={m.id}>
+                  <Link
+                    href={`/roadmap/${phase.id}/${m.id}`}
+                    className="group flex items-center justify-between gap-3 p-3.5 transition-colors duration-150 hover:bg-surface-raised"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium">{m.title}</span>
+                      <span className="mt-1 flex items-center gap-1.5 text-xs text-ink-muted">
+                        {hydrated && next ? (
+                          <>
+                            <LiveStatusIcon topicId={next.id} />
+                            <span className="truncate">{next.title}</span>
+                          </>
+                        ) : hydrated ? (
+                          <span className="text-ok">Đã hoàn thành module</span>
+                        ) : (
+                          <span className="truncate">{m.summary}</span>
+                        )}
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="font-mono text-xs text-ink-faint">
+                        {hydrated ? done : "—"}/{ids.length}
+                      </span>
+                      <ChevronRight className="size-4 text-ink-faint transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden />
+                    </span>
+                  </Link>
                 </li>
               );
             })}
