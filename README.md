@@ -18,7 +18,7 @@ npm test           # Vitest: unit + integration + content integrity
 npm run check      # typecheck + test
 ```
 
-Yêu cầu Node.js ≥ 20.9 (khuyến nghị 22 — Vitest 4 cần Node ≥ 20.19).
+Yêu cầu Node.js ≥ 20.9 (khuyến nghị 22 — Vitest cần Node ≥ 20.19).
 
 CI (`.github/workflows/ci.yml`) chạy typecheck → test → build cho mọi PR và push lên `main`.
 
@@ -81,4 +81,4 @@ Muốn dùng LLM thật: tạo Route Handler `app/api/grade/route.ts` gọi mode
 
 ## Ghi chú
 
-`lucide-react` đang để `latest`; sau lần `npm install` đầu tiên, `package-lock.json` sẽ khoá version cụ thể.
+Sau lần `npm install` đầu tiên, hãy commit `package-lock.json` để mọi môi trường cài cùng version (CI tự chuyển sang `npm ci` khi có lockfile).

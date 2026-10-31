@@ -135,7 +135,7 @@ Package mới: `vitest` (Giai đoạn 1), `@playwright/test` + `@axe-core/playwr
 
 ## 8. Việc kỹ thuật tồn đọng (theo dõi riêng)
 
-- Commit `package-lock.json` và pin `lucide-react` (CI sẽ tự chuyển sang `npm ci` khi có lockfile).
+- Commit `package-lock.json` (CI tự chuyển sang `npm ci` khi có lockfile). `lucide-react` đã được pin `^1.66.0` ở Giai đoạn 1.
 - Race condition read-modify-write ở `PUT /api/progress` → dùng Lua script hoặc optimistic version.
 - Bộ đếm sai PIN toàn cục → thêm giới hạn theo IP.
 - `scryptSync` → `scrypt` bất đồng bộ.
