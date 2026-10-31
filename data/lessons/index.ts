@@ -2,8 +2,13 @@ import type { Lesson } from "./types";
 import { phase1Lessons } from "./phase-1";
 import { phase2Lessons } from "./phase-2";
 import { phase3Lessons } from "./phase-3";
+import { quizzesByTopic } from "@/data/quizzes";
 
-const ALL: Lesson[] = [...phase1Lessons, ...phase2Lessons, ...phase3Lessons];
+/** Quiz được tách riêng (data/quizzes) để nội dung bài và câu hỏi review độc lập */
+const ALL: Lesson[] = [...phase1Lessons, ...phase2Lessons, ...phase3Lessons].map((lesson) => {
+  const quiz = lesson.quiz ?? quizzesByTopic[lesson.topicId];
+  return quiz ? { ...lesson, quiz } : lesson;
+});
 
 const BY_TOPIC = new Map(ALL.map((l) => [l.topicId, l]));
 

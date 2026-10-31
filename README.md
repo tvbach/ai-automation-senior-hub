@@ -42,11 +42,13 @@ components/progress/          # ProgressProvider, SyncButton (PIN), StatusContro
 components/lesson/            # LessonArticle, LessonChecklist
 data/content.ts               # skills, phases, modules, topics (id ổn định), câu hỏi, rubric
 data/lessons/                 # 41 bài học (phase-1/2/3.ts) + kiểu Lesson/QuizQuestion
+data/quizzes/                 # quiz 3 câu tình huống cho mỗi bài (khoá theo topic id)
 data/labs/                    # kiểu Lab (danh sách lab bổ sung ở giai đoạn sau)
 lib/curriculum.ts             # dữ liệu suy ra: giờ học ước tính, kỹ năng của phase
 lib/progress.ts               # mô hình tiến độ v2, migrate, merge, streak, thống kê (pure)
 lib/redis.ts                  # client Upstash REST tối giản
 lib/grader.ts                 # chấm điểm mock interview theo rubric
+lib/quiz.ts                   # chấm quiz, ngưỡng đạt
 tests/unit/                   # progress, grader, content integrity
 tests/integration/            # /api/progress với fake Upstash (stub fetch)
 .github/workflows/ci.yml      # typecheck → test → build
@@ -55,6 +57,7 @@ tests/integration/            # /api/progress với fake Upstash (stub fetch)
 ## Học & theo dõi tiến độ
 
 - Mỗi phase có các module; mỗi module (`/roadmap/[phaseId]/[moduleId]`) gồm các bài học: giải thích cho người mới, ví dụ đời thường, code mẫu, lỗi hay gặp, bài tập có lời giải, checklist tự kiểm tra, câu trả lời phỏng vấn mẫu.
+- Cuối mỗi bài có **Kiểm tra nhanh** (quiz tình huống, đạt từ 60%); điểm cao nhất và lần gần nhất được lưu và đồng bộ như tiến độ. Viết thêm quiz: `data/quizzes/*.ts` — test `content-integrity` chặn đáp án lộ theo vị trí hoặc độ dài.
 - Đánh dấu trạng thái mỗi bài (Chưa học / Đang học / Hoàn thành). Dashboard tính tiến độ, chuỗi ngày học, điểm mock interview từ dữ liệu thật — không có số liệu fix cứng.
 - Nội dung bài học: `data/lessons/phase-*.ts` (kiểu `Lesson` trong `data/lessons/types.ts`). Thêm câu hỏi phỏng vấn: `interviewQuestions` trong `data/content.ts`.
 - Mỗi phase có `level`, `prerequisites` (cần biết trước) và giờ học ước tính = bài học + capstone (`lib/curriculum.ts`); mỗi module gắn `skills` trong danh mục `skills`.
