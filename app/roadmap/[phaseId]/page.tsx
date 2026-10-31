@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen, Clock, ExternalLink, Flag, Lightbulb, SquareCheck } from "lucide-react";
 import { getPhase, phases } from "@/data/content";
-import { getLesson } from "@/data/lessons";
+import { moduleMinutes, phaseEstimatedHours, phaseSkills } from "@/lib/curriculum";
 import { CodeBlock } from "@/components/ui/code-block";
 import { Badge, Card, Eyebrow } from "@/components/ui/primitives";
 import { LiveCount, LiveProgress } from "@/components/progress/live-progress";
@@ -47,9 +47,16 @@ export default async function PhasePage({ params }: Props) {
       {/* Header */}
       <header className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-end">
         <div>
-          <Eyebrow>{`// phase_0${phase.order} · ${phase.durationWeeks} tuần`}</Eyebrow>
+          <Eyebrow>{`// phase_0${phase.order} · ${phase.level} · ~${phaseEstimatedHours(phase)} giờ`}</Eyebrow>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{phase.title}</h1>
           <p className="mt-3 max-w-2xl text-ink-muted text-pretty">{phase.tagline}</p>
+          <ul className="mt-4 flex flex-wrap gap-2" aria-label="Kỹ năng rèn luyện">
+            {phaseSkills(phase).map((s) => (
+              <li key={s.id} title={s.description}>
+                <Badge>{s.title}</Badge>
+              </li>
+            ))}
+          </ul>
         </div>
         <Card className="space-y-2">
           <span className="text-sm text-ink-muted">Tiến độ của bạn</span>
@@ -59,9 +66,16 @@ export default async function PhasePage({ params }: Props) {
 
       <div className="rounded-2xl border border-accent/25 bg-accent-wash p-5">
         <p className="flex items-center gap-2 text-sm font-medium text-accent-soft">
-          <Lightbulb className="size-4" aria-hidden /> Tận dụng background của bạn
+          <Lightbulb className="size-4" aria-hidden /> Cần biết trước khi học
         </p>
-        <p className="mt-2 text-ink">{phase.leverage}</p>
+        <ul className="mt-2 space-y-1.5">
+          {phase.prerequisites.map((p) => (
+            <li key={p} className="flex gap-2.5 text-ink">
+              <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent-soft" aria-hidden />
+              {p}
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Modules */}
@@ -72,7 +86,7 @@ export default async function PhasePage({ params }: Props) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {phase.modules.map((m, mi) => {
             const ids = m.topics.map((t) => t.id);
-            const minutes = m.topics.reduce((sum, t) => sum + (getLesson(t.id)?.minutes ?? 0), 0);
+            const minutes = moduleMinutes(m);
             return (
               <Link
                 key={m.id}

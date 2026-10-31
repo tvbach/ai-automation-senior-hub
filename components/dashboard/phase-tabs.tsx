@@ -14,7 +14,7 @@ import { cn } from "@/lib/cn";
  * Tabs chuẩn WAI-ARIA: Arrow Left/Right/Home/End để chuyển tab,
  * roving tabindex, panel fade-in khi đổi tab.
  */
-export function PhaseTabs({ phases }: { phases: Phase[] }) {
+export function PhaseTabs({ phases, estimatedHours }: { phases: Phase[]; estimatedHours: Record<string, number> }) {
   const [active, setActive] = useState(0);
   const { state, hydrated } = useProgress();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -91,9 +91,16 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
 
           <div className="rounded-xl border border-accent/25 bg-accent-wash p-4">
             <p className="flex items-center gap-2 text-sm font-medium text-accent-soft">
-              <Lightbulb className="size-4" aria-hidden /> Tận dụng background Full-stack
+              <Lightbulb className="size-4" aria-hidden /> Cần biết trước
             </p>
-            <p className="mt-1.5 text-sm text-ink">{phase.leverage}</p>
+            <ul className="mt-1.5 space-y-1.5">
+              {phase.prerequisites.map((p) => (
+                <li key={p} className="flex gap-2.5 text-sm text-ink">
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-accent-soft" aria-hidden />
+                  {p}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>
@@ -114,7 +121,7 @@ export function PhaseTabs({ phases }: { phases: Phase[] }) {
         {/* Right: modules + progress */}
         <div className="space-y-4">
           <p className="font-mono text-xs text-ink-faint">
-            {phase.durationWeeks} tuần · {phase.modules.length} module · {phaseTopicIds.length} topic
+            {phase.level} · ~{estimatedHours[phase.id]} giờ · {phase.modules.length} module · {phaseTopicIds.length} topic
           </p>
           <LiveProgress topicIds={phaseTopicIds} label={`Tiến độ ${phase.shortTitle}`} />
 

@@ -539,7 +539,7 @@ export const phase3Lessons: Lesson[] = [
       }
     ],
     "exercise": {
-      "task": "Đặt performance budget cho trang chủ app `ai-automation-senior-hub` của bạn: chạy Lighthouse (DevTools hoặc `npx @lhci/cli autorun`), ghi lại LCP, CLS, TBT hiện tại, rồi đặt budget = hiện tại + 10% biên.",
+      "task": "Đặt performance budget cho trang chủ của một web app bạn quản lý: chạy Lighthouse (DevTools hoặc `npx @lhci/cli autorun`), ghi lại LCP, CLS, TBT hiện tại, rồi đặt budget = hiện tại + 10% biên.",
       "solutionNote": "Budget dựa trên thực tế hiện tại giúp chặn **suy giảm** thay vì đặt mục tiêu viển vông. Sau đó siết dần theo thời gian."
     },
     "checklist": [
