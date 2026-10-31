@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, LayoutDashboard, MessagesSquare } from "lucide-react";
+import { Bot, LayoutDashboard, MessagesSquare, Radar } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { SyncButton } from "@/components/progress/sync-button";
 
 const NAV = [
   { href: "/", label: "Dashboard", short: "Lộ trình", icon: LayoutDashboard, match: (p: string) => p === "/" || p.startsWith("/roadmap") },
+  { href: "/skills", label: "Năng lực", short: "Năng lực", icon: Radar, match: (p: string) => p.startsWith("/skills") },
   { href: "/interview", label: "Interview Hub", short: "Phỏng vấn", icon: MessagesSquare, match: (p: string) => p.startsWith("/interview") },
 ];
 
@@ -45,7 +46,8 @@ export function SiteHeader() {
                   >
                     <Icon className="size-4" aria-hidden />
                     <span className="hidden sm:inline">{label}</span>
-                    <span className="sm:hidden">{short}</span>
+                    {/* Màn hình hẹp: chỉ mục đang mở hiện chữ, các mục khác chỉ còn icon */}
+                    <span className={cn("sm:hidden", !active && "sr-only")}>{short}</span>
                   </Link>
                 </li>
               );

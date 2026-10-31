@@ -5,6 +5,7 @@ import { phaseEstimatedHours } from "@/lib/curriculum";
 import { ContinueLearning, LiveStats } from "@/components/dashboard/live-stats";
 import { PhaseTabs } from "@/components/dashboard/phase-tabs";
 import { LiveProgress } from "@/components/progress/live-progress";
+import { SkillSnapshot } from "@/components/skills/skills-board";
 import { Eyebrow } from "@/components/ui/primitives";
 
 export default function DashboardPage() {
@@ -50,6 +51,9 @@ export default function DashboardPage() {
           Thống kê tiến độ
         </h2>
         <LiveStats />
+        <div className="mt-4">
+          <SkillSnapshot />
+        </div>
       </section>
 
       {/* -------------------------------------------------------- Timeline */}

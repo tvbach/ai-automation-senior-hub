@@ -31,6 +31,7 @@ app/
   page.tsx                              # Dashboard: stats thật, "Học tiếp", 3 phase
   roadmap/[phaseId]/page.tsx            # Trang giai đoạn
   roadmap/[phaseId]/[moduleId]/page.tsx # Trang module = danh sách bài học
+  skills/page.tsx                       # Năng lực theo 11 kỹ năng + gợi ý ôn tập
   interview/page.tsx                    # Interview Hub + Mock Interview Simulator
   api/progress/route.ts                 # API đồng bộ tiến độ (Redis + PIN)
 components/
@@ -49,6 +50,7 @@ lib/progress.ts               # mô hình tiến độ v2, migrate, merge, strea
 lib/redis.ts                  # client Upstash REST tối giản
 lib/grader.ts                 # chấm điểm mock interview theo rubric
 lib/quiz.ts                   # chấm quiz, ngưỡng đạt
+lib/competency.ts             # điểm năng lực theo kỹ năng, gợi ý việc nên làm tiếp
 tests/unit/                   # progress, grader, content integrity
 tests/integration/            # /api/progress với fake Upstash (stub fetch)
 .github/workflows/ci.yml      # typecheck → test → build
