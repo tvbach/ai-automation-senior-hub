@@ -16,6 +16,7 @@ npm run build && npm start
 npm run typecheck
 npm test           # Vitest: unit + integration + content integrity
 npm run check      # typecheck + test
+npm run e2e        # Playwright E2E + axe (tự dựng app ở cổng 3100; lần đầu: npx playwright install chromium)
 ```
 
 Yêu cầu Node.js ≥ 20.9 (khuyến nghị 22 — Vitest cần Node ≥ 20.19).
@@ -31,6 +32,8 @@ app/
   page.tsx                              # Dashboard: stats thật, "Học tiếp", 3 phase
   roadmap/[phaseId]/page.tsx            # Trang giai đoạn
   roadmap/[phaseId]/[moduleId]/page.tsx # Trang module = danh sách bài học
+  skills/page.tsx                       # Năng lực theo 11 kỹ năng + gợi ý ôn tập
+  assessment/page.tsx                   # Skill Assessment đầu vào (22 câu) + gợi ý theo phase
   interview/page.tsx                    # Interview Hub + Mock Interview Simulator
   api/progress/route.ts                 # API đồng bộ tiến độ (Redis + PIN)
 components/
@@ -43,14 +46,18 @@ components/lesson/            # LessonArticle, LessonChecklist
 data/content.ts               # skills, phases, modules, topics (id ổn định), câu hỏi, rubric
 data/lessons/                 # 41 bài học (phase-1/2/3.ts) + kiểu Lesson/QuizQuestion
 data/quizzes/                 # quiz 3 câu tình huống cho mỗi bài (khoá theo topic id)
+data/assessment.ts            # câu hỏi Skill Assessment (2 câu/kỹ năng)
 data/labs/                    # kiểu Lab (danh sách lab bổ sung ở giai đoạn sau)
 lib/curriculum.ts             # dữ liệu suy ra: giờ học ước tính, kỹ năng của phase
 lib/progress.ts               # mô hình tiến độ v2, migrate, merge, streak, thống kê (pure)
 lib/redis.ts                  # client Upstash REST tối giản
 lib/grader.ts                 # chấm điểm mock interview theo rubric
 lib/quiz.ts                   # chấm quiz, ngưỡng đạt
+lib/competency.ts             # điểm năng lực theo kỹ năng, gợi ý việc nên làm tiếp
+lib/assessment.ts             # chấm assessment, gợi ý học kỹ/học lướt theo phase
 tests/unit/                   # progress, grader, content integrity
 tests/integration/            # /api/progress với fake Upstash (stub fetch)
+e2e/                          # Playwright: smoke, quiz, assessment, a11y (desktop + mobile)
 .github/workflows/ci.yml      # typecheck → test → build
 ```
 
