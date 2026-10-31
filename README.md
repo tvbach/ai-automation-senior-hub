@@ -16,6 +16,7 @@ npm run build && npm start
 npm run typecheck
 npm test           # Vitest: unit + integration + content integrity
 npm run check      # typecheck + test
+npm run e2e        # Playwright E2E + axe (tự dựng app ở cổng 3100; lần đầu: npx playwright install chromium)
 ```
 
 Yêu cầu Node.js ≥ 20.9 (khuyến nghị 22 — Vitest cần Node ≥ 20.19).
@@ -56,6 +57,7 @@ lib/competency.ts             # điểm năng lực theo kỹ năng, gợi ý vi
 lib/assessment.ts             # chấm assessment, gợi ý học kỹ/học lướt theo phase
 tests/unit/                   # progress, grader, content integrity
 tests/integration/            # /api/progress với fake Upstash (stub fetch)
+e2e/                          # Playwright: smoke, quiz, assessment, a11y (desktop + mobile)
 .github/workflows/ci.yml      # typecheck → test → build
 ```
 
