@@ -14,7 +14,9 @@ test("Skill Assessment: làm hết 22 câu, xem gợi ý theo phase và test-out
   }
 
   await expect(page.getByRole("heading", { name: "Gợi ý cho từng giai đoạn" })).toBeVisible();
-  await expect(page.getByText("Có thể học lướt")).toHaveCount(phases.length);
+  const phaseLinks = page.getByRole("link").filter({ hasText: /PHASE 0\d/ });
+  await expect(phaseLinks).toHaveCount(phases.length);
+  for (const link of await phaseLinks.all()) await expect(link).toContainText("Có thể học lướt");
   await expect(page.getByText(`Xem lại đáp án (${assessmentQuestions.length}/${assessmentQuestions.length} đúng)`)).toBeVisible();
 
   await page.getByRole("link", { name: "Xem gợi ý học tiếp" }).click();
