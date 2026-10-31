@@ -84,11 +84,11 @@ Redirect (`next.config.ts`): `/roadmap/test-architecture`, `/roadmap/ai-driven-t
 - Không còn UI nào phụ thuộc hồ sơ cá nhân.
 - `npm run typecheck`, `npm test`, `npm run build` xanh trên CI cho mọi PR.
 
-### Giai đoạn 2 — Học có kiểm tra
-- Quiz 3–5 câu tình huống cho 41 bài; UI quiz trong `LessonArticle`; lưu `quizzes`.
-- `lib/competency.ts`: điểm skill = f(quiz, lab, assessment); trang `/skills`.
-- Skill Assessment đầu vào (~20 câu) → gợi ý phase nên bỏ qua.
-- E2E Playwright cho flow chính: đọc bài → làm quiz → tiến độ cập nhật.
+### Giai đoạn 2 — Học có kiểm tra *(đã giao: PR #2–#5)*
+- ✅ Quiz 3 câu tình huống cho 41 bài (123 câu); UI quiz trong `LessonArticle`; lưu `quizzes`. Test chặn lộ đáp án theo vị trí/độ dài.
+- ✅ `lib/competency.ts`: điểm skill = 70% quiz + 30% hoàn thành (lab cộng thêm ở Giai đoạn 4); trang `/skills`, thẻ Dashboard.
+- ✅ Skill Assessment đầu vào (22 câu) → gợi ý học lướt/học kỹ theo phase; kỹ năng ≥ 80 được gợi ý test-out bằng quiz. Assessment không cộng vào điểm năng lực.
+- ✅ E2E Playwright (desktop + mobile) + axe WCAG 2.1 AA trong CI; đã sửa 3 lỗi a11y mà axe phát hiện ở khối code.
 
 **Acceptance:** mỗi bài có ≥ 3 câu quiz có giải thích; Dashboard hiện năng lực theo skill từ dữ liệu thật; assessment chạy không cần đăng nhập.
 
