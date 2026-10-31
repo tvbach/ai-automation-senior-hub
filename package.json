@@ -2,12 +2,15 @@
   "name": "ai-automation-senior-hub",
   "version": "1.0.0",
   "private": true,
-  "description": "Personal hub: roadmap, playbooks & interview practice for Senior Automation Test AI",
+  "description": "Learning platform for QA Automation, SDET and AI-Driven Testing: roadmap, practice and interview prep",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run test"
   },
   "dependencies": {
     "lucide-react": "latest",
@@ -21,7 +24,8 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "tailwindcss": "^4.1.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "vitest": "^4.0.0"
   },
   "engines": {
     "node": ">=20.9.0"
