@@ -28,7 +28,7 @@ export function CodeBlock({ sample }: { sample: CodeSample }) {
       <figcaption className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2">
         <span className="min-w-0 truncate font-mono text-xs text-slate-400">
           {sample.title}
-          <span className="ml-2 text-slate-500">{sample.language}</span>
+          <span className="ml-2 text-slate-400">· {sample.language}</span>
         </span>
         {/* Tên của nút = chữ đang hiển thị (WCAG 2.5.3 Label in Name) */}
         <button
