@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, ClipboardCheck, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, ClipboardCheck, Compass, RotateCcw, Sparkles } from "lucide-react";
 import {
   ACTION_LABEL,
   computeCompetency,
@@ -78,13 +78,17 @@ function SkillCard({ c }: { c: SkillCompetency }) {
       </div>
 
       {empty ? (
-        <p className="text-sm text-ink-faint">Bài học cho kỹ năng này sẽ được bổ sung khi mở rộng lộ trình cho người mới.</p>
+        <p className="text-sm text-ink-faint">
+          Bài học cho kỹ năng này sẽ được bổ sung khi mở rộng lộ trình cho người mới.
+          {c.assessed !== undefined && ` Điểm đầu vào: ${c.assessed}.`}
+        </p>
       ) : (
         <>
           <div className="space-y-2">
             <div className="flex items-end justify-between font-mono text-xs text-ink-muted">
               <span>
                 Quiz đạt {c.passed}/{c.topicCount} · hoàn thành {c.done}/{c.topicCount}
+                {c.assessed !== undefined && ` · đầu vào ${c.assessed}`}
               </span>
               <span className="text-lg font-semibold text-ink">{c.score}</span>
             </div>
@@ -112,6 +116,23 @@ function SkillCard({ c }: { c: SkillCompetency }) {
   );
 }
 
+function AssessmentBanner({ at }: { at?: number }) {
+  return (
+    <Link
+      href="/assessment"
+      className="group flex min-h-12 items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm transition-colors duration-200 hover:border-accent/50"
+    >
+      <Compass className="size-4 shrink-0 text-accent-soft" aria-hidden />
+      <span className="flex-1 text-ink">
+        {at
+          ? `Skill Assessment gần nhất: ${new Date(at).toLocaleDateString("vi-VN")}. Kỹ năng đạt cao được gợi ý làm quiz kiểm tra thay vì học lại.`
+          : "Làm Skill Assessment (22 câu, ~10 phút) để biết nên học kỹ hay học lướt từng giai đoạn."}
+      </span>
+      <span className="shrink-0 font-medium text-accent-soft">{at ? "Làm lại" : "Bắt đầu"}</span>
+    </Link>
+  );
+}
+
 export function SkillsBoard() {
   const { state, hydrated } = useProgress();
 
@@ -131,6 +152,7 @@ export function SkillsBoard() {
 
   return (
     <div className="space-y-8">
+      <AssessmentBanner at={state.assessment?.at} />
       <section aria-labelledby="next-title" className="rounded-2xl border border-accent/30 bg-accent-wash p-4 sm:p-5">
         <h2 id="next-title" className="flex items-center gap-2 text-sm font-medium text-accent-soft">
           <Sparkles className="size-4" aria-hidden /> Ưu tiên tiếp theo
@@ -199,6 +221,15 @@ export function SkillSnapshot() {
         <div className="mt-4 border-t border-line pt-2">
           <ActionLink action={first} />
         </div>
+      )}
+      {!state.assessment && (
+        <Link
+          href="/assessment"
+          className="mt-3 flex min-h-11 items-center gap-2 rounded-lg border border-dashed border-accent/40 px-3 text-sm text-accent-soft hover:bg-accent-wash"
+        >
+          <Compass className="size-4 shrink-0" aria-hidden />
+          Chưa biết bắt đầu từ đâu? Làm Skill Assessment (22 câu, ~10 phút)
+        </Link>
       )}
     </div>
   );

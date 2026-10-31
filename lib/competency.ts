@@ -8,9 +8,14 @@
  *
  * Bài chưa làm quiz tính 0 điểm quiz: "đã đọc" không đồng nghĩa "đã hiểu".
  * Lab có bằng chứng sẽ được cộng vào công thức ở Giai đoạn 4.
+ *
+ * Skill Assessment không cộng vào điểm (đó là tự chẩn đoán, không phải bằng
+ * chứng), nhưng kỹ năng đạt assessment cao được gợi ý "làm quiz kiểm tra"
+ * thay vì học lại bài từ đầu — người đã vững có thể đi nhanh.
  * ----------------------------------------------------------------------------
  */
 import { allTopics, skills as skillCatalog, type Module, type Phase, type Skill, type Topic } from "@/data/content";
+import { ASSESSMENT_STRONG } from "@/lib/assessment";
 import { QUIZ_PASS_SCORE } from "@/lib/quiz";
 import { topicStatus, type ProgressState } from "@/lib/progress";
 
@@ -57,6 +62,8 @@ export interface SkillCompetency {
   topicCount: number;
   /** Số bài đã làm quiz ít nhất một lần */
   quizzed: number;
+  /** Điểm Skill Assessment gần nhất của kỹ năng (nếu đã làm) */
+  assessed?: number;
   /** Số bài có điểm quiz cao nhất ≥ ngưỡng đạt */
   passed: number;
   done: number;
@@ -80,13 +87,14 @@ function levelFor(score: number, hasActivity: boolean, topicCount: number): Comp
   return "developing";
 }
 
-function actionFor(state: ProgressState, skillId: string, entry: CatalogEntry): StudyAction | null {
+function actionFor(state: ProgressState, skillId: string, entry: CatalogEntry, testOut: boolean): StudyAction | null {
   const { topic, module, phase } = entry;
   const quiz = state.quizzes[topic.id];
   const status = topicStatus(state, topic.id);
   let kind: StudyActionKind | null = null;
   if (quiz && quiz.best < QUIZ_PASS_SCORE) kind = "retake";
-  else if (!quiz && status !== "todo") kind = "quiz";
+  // Đã đọc bài, hoặc assessment cho thấy đã vững → kiểm tra bằng quiz luôn
+  else if (!quiz && (status !== "todo" || testOut)) kind = "quiz";
   else if (!quiz) kind = "learn";
   if (!kind) return null;
   return {
@@ -132,9 +140,10 @@ export function computeCompetency(
     }
 
     const n = entries.length;
+    const assessed = state.assessment?.scores[skill.id];
     const score = n ? Math.round(QUIZ_WEIGHT * (quizSum / n) + COMPLETION_WEIGHT * (done / n) * 100) : 0;
     const actions = entries
-      .map((e) => actionFor(state, skill.id, e))
+      .map((e) => actionFor(state, skill.id, e, (assessed ?? -1) >= ASSESSMENT_STRONG))
       .filter((a): a is StudyAction => a !== null)
       // Ổn định: cùng loại thì giữ thứ tự lộ trình
       .sort((a, b) => ACTION_ORDER[a.kind] - ACTION_ORDER[b.kind]);
@@ -148,6 +157,7 @@ export function computeCompetency(
       passed,
       done,
       actions,
+      ...(assessed !== undefined ? { assessed } : {}),
     };
   });
 }

@@ -8,6 +8,7 @@ import { allTopics, interviewQuestions, phases, skills } from "@/data/content";
 import { allLessons, getLesson } from "@/data/lessons";
 import { labs } from "@/data/labs";
 import { quizzesByTopic } from "@/data/quizzes";
+import { assessmentQuestions } from "@/data/assessment";
 import { moduleMinutes, phaseEstimatedHours, phaseSkills } from "@/lib/curriculum";
 import { PROGRESS_ID_RE } from "@/lib/progress";
 
@@ -140,7 +141,8 @@ describe("Bài học", () => {
 });
 
 describe("Quiz", () => {
-  const allQuestions = allLessons.flatMap((l) => l.quiz ?? []);
+  // Gồm cả Skill Assessment: cùng quy ước chống lộ đáp án
+  const allQuestions = [...allLessons.flatMap((l) => l.quiz ?? []), ...assessmentQuestions];
 
   it("mọi bài học có ít nhất 3 câu quiz", () => {
     expect(allLessons.filter((l) => (l.quiz?.length ?? 0) < 3).map((l) => l.topicId)).toEqual([]);
@@ -172,6 +174,24 @@ describe("Quiz", () => {
     }
     const worst = Math.max(...byRank.values()) / allQuestions.length;
     expect(worst).toBeLessThanOrEqual(0.4);
+  });
+});
+
+describe("Skill Assessment", () => {
+  it("mỗi kỹ năng trong danh mục có đúng 2 câu", () => {
+    for (const id of skillIds) {
+      expect(assessmentQuestions.filter((q) => q.skill === id), id).toHaveLength(2);
+    }
+  });
+
+  it("id câu hỏi duy nhất, đáp án tồn tại, có giải thích", () => {
+    expect(duplicates(assessmentQuestions.map((q) => q.id))).toEqual([]);
+    for (const q of assessmentQuestions) {
+      expect(PROGRESS_ID_RE.test(q.id), q.id).toBe(true);
+      expect(q.options.map((o) => o.id), q.id).toContain(q.answer);
+      expect(duplicates(q.options.map((o) => o.id)), q.id).toEqual([]);
+      expect(q.explanation.trim(), q.id).not.toBe("");
+    }
   });
 });
 

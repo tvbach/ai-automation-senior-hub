@@ -231,6 +231,19 @@ export function withQuizResult(state: ProgressState, topicId: string, score: num
   };
 }
 
+/** Lưu kết quả Skill Assessment mới nhất (thay thế lần trước), đánh dấu ngày có học */
+export function withAssessment(state: ProgressState, scores: Record<string, number>, now: number = Date.now()): ProgressState {
+  const clean: Record<string, number> = {};
+  for (const [id, v] of Object.entries(scores)) {
+    if (PROGRESS_ID_RE.test(id) && Number.isFinite(v)) clean[id] = Math.max(0, Math.min(100, Math.round(v)));
+  }
+  return {
+    ...state,
+    assessment: { at: now, scores: clean },
+    activity: [...new Set([...state.activity, localDay(now)])].sort().slice(-MAX_ACTIVITY_DAYS),
+  };
+}
+
 export function sameProgress(a: ProgressState, b: ProgressState): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
