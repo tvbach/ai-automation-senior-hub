@@ -7,6 +7,7 @@ import {
   Lightbulb,
   ListChecks,
   MessageCircleQuestion,
+  ClipboardCheck,
   Sparkles,
   TriangleAlert,
   type LucideIcon,
@@ -18,6 +19,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { Badge } from "@/components/ui/primitives";
 import { StatusControl } from "@/components/progress/status-control";
 import { LessonChecklist } from "./lesson-checklist";
+import { LessonQuiz } from "./lesson-quiz";
 
 function Section({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: React.ReactNode }) {
   return (
@@ -212,6 +214,12 @@ export function LessonArticle({ index, topic, lesson }: { index: number; topic: 
                   </li>
                 ))}
               </ul>
+            </Section>
+          )}
+
+          {lesson.quiz && lesson.quiz.length > 0 && (
+            <Section icon={ClipboardCheck} title="Kiểm tra nhanh">
+              <LessonQuiz topicId={topic.id} questions={lesson.quiz} />
             </Section>
           )}
 

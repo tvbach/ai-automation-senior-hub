@@ -218,6 +218,19 @@ export function mergeProgress(a: ProgressState, b: ProgressState): ProgressState
   };
 }
 
+/* --------------------------------------------------------------- updates */
+
+/** Ghi một lần làm quiz: cập nhật last/at, giữ best cao nhất, đánh dấu ngày có học */
+export function withQuizResult(state: ProgressState, topicId: string, score: number, now: number = Date.now()): ProgressState {
+  const last = Math.max(0, Math.min(100, Math.round(score)));
+  const prev = state.quizzes[topicId];
+  return {
+    ...state,
+    quizzes: { ...state.quizzes, [topicId]: { best: Math.max(prev?.best ?? 0, last), last, at: now } },
+    activity: [...new Set([...state.activity, localDay(now)])].sort().slice(-MAX_ACTIVITY_DAYS),
+  };
+}
+
 export function sameProgress(a: ProgressState, b: ProgressState): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
