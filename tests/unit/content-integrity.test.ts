@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { allTopics, interviewQuestions, phases, skills } from "@/data/content";
 import { allLessons, getLesson } from "@/data/lessons";
 import { labs } from "@/data/labs";
+import { quizzesByTopic } from "@/data/quizzes";
 import { moduleMinutes, phaseEstimatedHours, phaseSkills } from "@/lib/curriculum";
 import { PROGRESS_ID_RE } from "@/lib/progress";
 
@@ -135,6 +136,42 @@ describe("Bài học", () => {
         expect(q.explanation.trim(), where).not.toBe("");
       }
     }
+  });
+});
+
+describe("Quiz", () => {
+  const allQuestions = allLessons.flatMap((l) => l.quiz ?? []);
+
+  it("mọi bài học có ít nhất 3 câu quiz", () => {
+    expect(allLessons.filter((l) => (l.quiz?.length ?? 0) < 3).map((l) => l.topicId)).toEqual([]);
+  });
+
+  it("quiz chỉ gắn vào topic có thật", () => {
+    expect(Object.keys(quizzesByTopic).filter((id) => !topicIds.includes(id))).toEqual([]);
+  });
+
+  /**
+   * Chống "mẹo đoán đáp án": nếu đáp án đúng hay nằm ở một vị trí, hoặc hay là
+   * lựa chọn dài nhất/ngắn nhất, người học đạt điểm mà không cần hiểu bài.
+   */
+  it("vị trí đáp án đúng phân bổ đều (không vị trí nào > 40%)", () => {
+    const byPosition = new Map<number, number>();
+    for (const q of allQuestions) {
+      const pos = q.options.findIndex((o) => o.id === q.answer);
+      byPosition.set(pos, (byPosition.get(pos) ?? 0) + 1);
+    }
+    const worst = Math.max(...byPosition.values()) / allQuestions.length;
+    expect(worst).toBeLessThanOrEqual(0.4);
+  });
+
+  it("độ dài đáp án đúng không để lộ đáp án (không hạng độ dài nào > 40%)", () => {
+    const byRank = new Map<number, number>();
+    for (const q of allQuestions) {
+      const rank = [...q.options].sort((x, y) => y.text.length - x.text.length).findIndex((o) => o.id === q.answer);
+      byRank.set(rank, (byRank.get(rank) ?? 0) + 1);
+    }
+    const worst = Math.max(...byRank.values()) / allQuestions.length;
+    expect(worst).toBeLessThanOrEqual(0.4);
   });
 });
 

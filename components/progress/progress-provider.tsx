@@ -9,6 +9,7 @@ import {
   mergeProgress,
   sameProgress,
   sanitizeProgress,
+  withQuizResult,
   type ProgressState,
 } from "@/lib/progress";
 
@@ -38,6 +39,8 @@ interface ProgressContextValue {
   sync: { mode: SyncMode; hasServerPin: boolean; message?: string };
   setTopicStatus: (topicId: string, status: TopicStatus) => void;
   addAttempt: (questionId: string, score: number) => void;
+  /** Lưu điểm quiz (0–100) của một bài học */
+  recordQuiz: (topicId: string, score: number) => void;
   /** Lưu PIN cho thiết bị này (tạo mới nếu server chưa có PIN) và đồng bộ ngay */
   connectWithPin: (pin: string) => Promise<{ ok: boolean; error?: string }>;
   forgetPin: () => void;
@@ -220,6 +223,11 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     [update],
   );
 
+  const recordQuiz = useCallback(
+    (topicId: string, score: number) => update((s) => withQuizResult(s, topicId, score)),
+    [update],
+  );
+
   const connectWithPin = useCallback(
     async (pin: string) => {
       const clean = pin.trim();
@@ -244,8 +252,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<ProgressContextValue>(
-    () => ({ state, hydrated, sync, setTopicStatus, addAttempt, connectWithPin, forgetPin }),
-    [state, hydrated, sync, setTopicStatus, addAttempt, connectWithPin, forgetPin],
+    () => ({ state, hydrated, sync, setTopicStatus, addAttempt, recordQuiz, connectWithPin, forgetPin }),
+    [state, hydrated, sync, setTopicStatus, addAttempt, recordQuiz, connectWithPin, forgetPin],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
