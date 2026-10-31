@@ -13,6 +13,15 @@
 
 export type TopicStatus = "done" | "in-progress" | "todo";
 
+export type Level = "Cơ bản" | "Trung cấp" | "Nâng cao";
+
+export interface Skill {
+  /** ID ổn định — dùng làm khoá điểm năng lực, KHÔNG đổi sau khi đã dùng */
+  id: string;
+  title: string;
+  description: string;
+}
+
 export interface Topic {
   /** ID ổn định — dùng làm khoá lưu tiến độ, KHÔNG đổi sau khi đã dùng */
   id: string;
@@ -25,6 +34,8 @@ export interface Module {
   id: string;
   title: string;
   summary: string;
+  /** Kỹ năng mà module này rèn luyện — dùng để tính năng lực và học theo kỹ năng */
+  skills: SkillId[];
   topics: Topic[];
 }
 
@@ -46,13 +57,16 @@ export interface Phase {
   title: string;
   shortTitle: string;
   tagline: string;
-  durationWeeks: number;
-  /** Tận dụng background Full-stack hiện có của bạn như thế nào */
-  leverage: string;
+  level: Level;
+  /**
+   * Kiến thức cần có trước khi học phase này. Không ép thời lượng học:
+   * giờ học ước tính được suy ra từ bài học + capstone (lib/curriculum.ts).
+   */
+  prerequisites: string[];
   outcomes: string[];
   modules: Module[];
   /** Deliverable thực chiến để đưa vào portfolio / kể trong phỏng vấn */
-  capstone: { title: string; description: string; acceptance: string[] };
+  capstone: { title: string; description: string; acceptance: string[]; estimatedHours: number };
   samples: CodeSample[];
   resources: Resource[];
 }
@@ -89,19 +103,71 @@ export interface InterviewQuestion {
 }
 
 /* ============================================================================
- * 2. PROFILE
+ * 2. SKILLS — các nhóm năng lực dùng chung cho bài học, quiz, lab và assessment
  * ========================================================================== */
 
-export const profile = {
-  name: "Senior Full-stack → AI SDET",
-  currentRole: "Senior Full-stack Engineer · 5+ năm",
-  stack: ["Ruby", "TypeScript", "Next.js", "React", "Node.js", "REST", "CI/CD"],
-  target: "Senior Automation Test AI / AI SDET",
-  weeklyHours: 12,
-};
+export const skills = [
+  {
+    id: "testing-fundamentals",
+    title: "Testing Fundamentals",
+    description: "Nguyên lý kiểm thử, SDLC/STLC, các cấp độ và loại test, Test Pyramid.",
+  },
+  {
+    id: "test-design",
+    title: "Test Analysis & Design",
+    description: "Phân tích yêu cầu, kỹ thuật thiết kế test case, ưu tiên theo rủi ro, bug report.",
+  },
+  {
+    id: "typescript",
+    title: "TypeScript for Automation",
+    description: "TypeScript, async/await, module, Git và npm phục vụ viết test tự động.",
+  },
+  {
+    id: "api-testing",
+    title: "API Testing",
+    description: "HTTP, REST, auth, schema/contract validation và tự động hoá API.",
+  },
+  {
+    id: "ui-automation",
+    title: "UI Automation",
+    description: "Playwright: locator, assertion, auth state, network mocking, component testing.",
+  },
+  {
+    id: "test-architecture",
+    title: "Framework Architecture",
+    description: "Fixtures, object patterns, cấu trúc framework có thể scale và bảo trì.",
+  },
+  {
+    id: "test-data",
+    title: "Test Data & Environments",
+    description: "Data factory, seeding qua API, isolation khi chạy song song, cleanup.",
+  },
+  {
+    id: "ci-cd",
+    title: "CI/CD & Quality Gates",
+    description: "Pipeline nhiều tầng, sharding, caching, preview env và quality gate.",
+  },
+  {
+    id: "reliability",
+    title: "Reliability & Observability",
+    description: "Xử lý flaky test, thu thập kết quả, flakiness score, dashboard chất lượng.",
+  },
+  {
+    id: "quality-engineering",
+    title: "Quality Engineering",
+    description: "Performance, security, accessibility, visual và contract testing.",
+  },
+  {
+    id: "ai-testing",
+    title: "AI-Driven Testing",
+    description: "Sinh test bằng LLM, self-healing locator, AI visual regression, prompt engineering, evals.",
+  },
+] as const satisfies readonly Skill[];
+
+export type SkillId = (typeof skills)[number]["id"];
 
 /* ============================================================================
- * 3. ROADMAP — 3 PHASES
+ * 3. ROADMAP
  * ========================================================================== */
 
 export const phases: Phase[] = [
@@ -115,9 +181,13 @@ export const phases: Phase[] = [
     shortTitle: "Test Architecture",
     tagline:
       "Thiết kế framework Playwright + TypeScript có thể scale cho 50+ engineer, không chỉ “viết được test”.",
-    durationWeeks: 6,
-    leverage:
-      "Bạn đã quen Next.js, REST, CI/CD — lợi thế lớn là hiểu app từ bên trong: biết đâu là boundary nên mock, đâu cần E2E thật. Điều cần đổi tư duy: từ “feature chạy được” sang “risk đã được kiểm soát với chi phí hợp lý”.",
+    level: "Nâng cao",
+    prerequisites: [
+      "Viết được TypeScript cơ bản: hàm, class, module, async/await",
+      "Hiểu HTTP/REST: method, status code, JSON",
+      "Đã viết và chạy được vài test E2E đơn giản (Playwright hoặc công cụ tương tự)",
+      "Dùng được Git, npm và terminal ở mức cơ bản",
+    ],
     outcomes: [
       "Giải thích được Test Pyramid vs Testing Trophy và chọn tỉ lệ dựa trên risk, không theo cảm tính",
       "Dựng framework Playwright nhiều layer: config → fixtures → page objects/components → specs",
@@ -130,6 +200,7 @@ export const phases: Phase[] = [
         title: "Test Strategy & Pyramid",
         summary:
           "Phân bổ test theo risk và chi phí phản hồi. Senior được đánh giá bằng quyết định ‘KHÔNG test gì ở E2E’.",
+        skills: ["testing-fundamentals", "test-architecture"],
         topics: [
           { id: "pyramid-models", title: "Test Pyramid vs Testing Trophy vs Honeycomb", note: "Biết khi nào mỗi mô hình hợp lý (monolith vs microservices)" },
           { id: "risk-based", title: "Risk-based testing & coverage matrix" },
@@ -142,6 +213,7 @@ export const phases: Phase[] = [
         title: "Playwright Framework Design",
         summary:
           "Fixtures thay cho before/after hooks, POM có giới hạn, locator theo accessibility.",
+        skills: ["ui-automation", "test-architecture"],
         topics: [
           { id: "fixtures", title: "Custom fixtures (test.extend) & fixture scopes" },
           { id: "object-patterns", title: "Page Object vs Screenplay vs Component Object" },
@@ -154,6 +226,7 @@ export const phases: Phase[] = [
         id: "data",
         title: "Test Data & Isolation",
         summary: "Parallel-safe data là điều kiện tiên quyết để scale và giảm flaky.",
+        skills: ["test-data", "test-architecture"],
         topics: [
           { id: "data-factory", title: "Data factory + API seeding (không seed qua UI)" },
           { id: "worker-isolation", title: "Tenant/worker isolation với workerIndex" },
@@ -163,7 +236,8 @@ export const phases: Phase[] = [
       {
         id: "nextjs",
         title: "Next.js Component & Contract Testing",
-        summary: "Tận dụng thế mạnh Next.js của bạn để test đúng layer.",
+        summary: "Test đúng layer cho app Next.js: component, Server Component/Server Action và contract API.",
+        skills: ["ui-automation", "quality-engineering"],
         topics: [
           { id: "ct-vs-vitest", title: "Playwright Component Testing vs Vitest + Testing Library" },
           { id: "rsc-server-actions", title: "Test Server Components & Server Actions qua integration layer" },
@@ -173,6 +247,7 @@ export const phases: Phase[] = [
     ],
     capstone: {
       title: "Lab Repo: playwright-enterprise-starter",
+      estimatedHours: 20,
       description:
         "Framework Playwright + TS cho một app Next.js mẫu (e-commerce mini), có fixtures nhiều layer, data factory và chạy 4 shards trên GitHub Actions.",
       acceptance: [
@@ -237,9 +312,12 @@ export { expect };`,
     shortTitle: "AI-Driven Testing",
     tagline:
       "LLM sinh test, self-healing locator, visual regression bằng AI — kèm guardrail để không biến AI thành nguồn flaky mới.",
-    durationWeeks: 8,
-    leverage:
-      "Kinh nghiệm gọi REST API và xây backend Node/Ruby giúp bạn dựng pipeline LLM nhanh. Phần cần đầu tư: prompt engineering có cấu trúc, đánh giá output (evals) và thiết kế human-in-the-loop.",
+    level: "Nâng cao",
+    prerequisites: [
+      "Nên hoàn thành giai đoạn Test Architecture & Advanced SDET (fixtures, locator, test data)",
+      "Gọi được REST API bằng TypeScript và xử lý JSON",
+      "Có API key của một LLM provider để làm bài tập (gói miễn phí là đủ)",
+    ],
     outcomes: [
       "Dựng pipeline: requirement/OpenAPI → test plan → Playwright spec, có validation bằng tsc + chạy thử",
       "Self-healing locator nhiều tầng: heuristic → DOM similarity → LLM fallback, có audit log",
@@ -251,6 +329,7 @@ export { expect };`,
         id: "generation",
         title: "LLM Test Generation Pipeline",
         summary: "Từ user story / OpenAPI spec sinh test có cấu trúc, không phải ‘chat ra code’.",
+        skills: ["ai-testing"],
         topics: [
           { id: "structured-output", title: "Structured output (JSON schema) cho test plan", note: "Ép LLM trả JSON → validate bằng Zod trước khi render code" },
           { id: "context-engineering", title: "Context engineering: đưa POM + fixtures hiện có vào prompt" },
@@ -262,6 +341,7 @@ export { expect };`,
         id: "healing",
         title: "Self-Healing Locators",
         summary: "Giảm chi phí maintain mà không che giấu bug thật.",
+        skills: ["ai-testing", "ui-automation"],
         topics: [
           { id: "fingerprint", title: "Fingerprint element: role, name, text, attributes, vị trí DOM" },
           { id: "similarity-threshold", title: "Similarity scoring + confidence threshold" },
@@ -273,6 +353,7 @@ export { expect };`,
         id: "visual",
         title: "AI Visual & Functional Regression",
         summary: "Phân biệt thay đổi có chủ đích và regression bằng AI thay vì pixel diff thuần.",
+        skills: ["ai-testing", "quality-engineering"],
         topics: [
           { id: "diff-types", title: "Pixel diff vs perceptual diff vs AI semantic diff" },
           { id: "snapshot-stability", title: "Ổn định snapshot: mask dynamic content, font, animation" },
@@ -283,6 +364,7 @@ export { expect };`,
         id: "prompting",
         title: "Prompt Engineering cho QA",
         summary: "Prompt có cấu trúc, versioned và được test như code.",
+        skills: ["ai-testing", "test-design"],
         topics: [
           { id: "prompt-templates", title: "Prompt template + few-shot từ test chuẩn của team" },
           { id: "edge-case-taxonomy", title: "Edge-case taxonomy: boundary, negative, auth, race, i18n" },
@@ -292,6 +374,7 @@ export { expect };`,
     ],
     capstone: {
       title: "ai-test-gen CLI + Self-healing plugin",
+      estimatedHours: 24,
       description:
         "CLI nhận user story hoặc OpenAPI, sinh Playwright spec dùng đúng fixtures của repo; plugin self-healing ghi lại mọi lần healing và mở PR đề xuất.",
       acceptance: [
@@ -386,9 +469,12 @@ export async function resilientLocator(
     shortTitle: "CI/CD & Quality Gates",
     tagline:
       "Biến test suite thành hệ thống ra quyết định: shard, quarantine, regression analysis và dashboard chất lượng.",
-    durationWeeks: 6,
-    leverage:
-      "Bạn đã làm CI/CD — giờ nâng lên tầm platform: test là một sản phẩm nội bộ với SLO, telemetry và chi phí rõ ràng.",
+    level: "Nâng cao",
+    prerequisites: [
+      "Có một bộ test Playwright chạy được ở local",
+      "Hiểu Git branch và quy trình Pull Request",
+      "Đọc và sửa được file YAML",
+    ],
     outcomes: [
       "Thiết kế pipeline nhiều tầng: PR smoke → merge full → nightly cross-browser/perf",
       "Sharding + test impact analysis để giữ PR feedback < 10 phút",
@@ -400,6 +486,7 @@ export async function resilientLocator(
         id: "pipeline",
         title: "Pipeline Architecture",
         summary: "Đúng test, đúng thời điểm, đúng chi phí.",
+        skills: ["ci-cd"],
         topics: [
           { id: "gha-sharding", title: "GitHub Actions matrix + sharding + merge reports" },
           { id: "test-impact", title: "Test Impact Analysis (chạy test theo file thay đổi)" },
@@ -411,6 +498,7 @@ export async function resilientLocator(
         id: "gates",
         title: "Quality Gates",
         summary: "Gate phải chặn đúng risk, không chặn nhầm vì noise.",
+        skills: ["ci-cd", "quality-engineering"],
         topics: [
           { id: "gate-rules", title: "Gate rules: block / warn / info theo mức độ" },
           { id: "flaky-budget", title: "Flaky budget & auto-quarantine có owner + SLA" },
@@ -422,6 +510,7 @@ export async function resilientLocator(
         id: "observability",
         title: "Test Observability & Analytics",
         summary: "Không đo được thì không cải thiện được.",
+        skills: ["reliability", "ai-testing"],
         topics: [
           { id: "results-ingestion", title: "Thu thập kết quả: JUnit/JSON → DB (Postgres/BigQuery)" },
           { id: "flakiness-score", title: "Flakiness score theo cửa sổ thời gian", note: "Flip rate trên cùng commit là tín hiệu mạnh nhất" },
@@ -432,6 +521,7 @@ export async function resilientLocator(
     ],
     capstone: {
       title: "Quality Gate Platform",
+      estimatedHours: 20,
       description:
         "Workflow GitHub Actions tái sử dụng + service nhỏ (Next.js API) lưu kết quả test, tính flakiness score và comment tóm tắt AI vào PR.",
       acceptance: [
@@ -870,7 +960,7 @@ await saved;`,
     category: "Behavioral (STAR)",
     difficulty: "Senior",
     question:
-      "Bạn đến từ Full-stack, vì sao chuyển sang Automation/AI Testing? Kể một lần bạn chủ động cải thiện chất lượng ở dự án cũ.",
+      "Vì sao bạn chọn theo Automation/AI Testing? Kể một lần bạn chủ động cải thiện chất lượng ở dự án trước đây.",
     whatTheyTest: "Động lực thật, tư duy quality ownership và khả năng kể chuyện có số liệu.",
     answer: [
       "Situation: ở dự án Next.js trước, mỗi lần release đều có hotfix vì regression ở luồng thanh toán; QA kiểm thủ công 2 ngày.",
@@ -882,7 +972,7 @@ await saved;`,
       "Đúng cấu trúc STAR, ngắn gọn",
       "Có số liệu trước/sau",
       "Thể hiện ownership, không chờ được giao",
-      "Liên kết background Full-stack thành lợi thế",
+      "Biến kinh nghiệm trước đó (dev, manual QA, vận hành…) thành lợi thế cho vai trò SDET",
     ],
     pitfalls: ["Nói ‘vì testing dễ hơn’", "Câu chuyện không có kết quả đo được"],
     rubric: [

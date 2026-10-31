@@ -6,6 +6,9 @@
  *        Lần đầu (chưa có PIN): gửi setupPin để tạo PIN.
  *        Các lần sau: header x-progress-pin phải khớp. Sai > 10 lần / 15 phút → 429.
  *        Server MERGE với bản đang lưu (không ghi đè) rồi trả về bản đã gộp.
+ *
+ * Migration: state lưu ở `hub:progress:v2`. Nếu chưa có, đọc `hub:progress:v1`
+ * và nâng cấp qua sanitizeProgress. Key v1 được giữ nguyên để có thể rollback.
  */
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { emptyProgress, mergeProgress, sanitizeProgress, type ProgressState } from "@/lib/progress";
@@ -13,7 +16,8 @@ import { redis, redisConfigured } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
-const KEY_STATE = "hub:progress:v1";
+const KEY_STATE = "hub:progress:v2";
+const KEY_STATE_LEGACY = "hub:progress:v1";
 const KEY_PIN = "hub:pin:v1";
 const KEY_FAILS = "hub:pin-fails";
 const MAX_FAILS = 10;
@@ -25,7 +29,7 @@ const json = (data: unknown, status = 200) =>
   Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 
 async function readState(): Promise<ProgressState> {
-  const raw = await redis<string | null>(["GET", KEY_STATE]);
+  const raw = (await redis<string | null>(["GET", KEY_STATE])) ?? (await redis<string | null>(["GET", KEY_STATE_LEGACY]));
   if (!raw) return emptyProgress();
   try {
     return sanitizeProgress(JSON.parse(raw));

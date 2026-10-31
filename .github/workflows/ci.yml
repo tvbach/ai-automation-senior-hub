@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Khi package-lock.json đã được commit, CI tự chuyển sang `npm ci` (cài đặt tái lập được)
+      - name: Install dependencies
+        run: |
+          set +e
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund 2>&1 | tee /tmp/npm.log
+          else
+            npm install --no-audit --no-fund 2>&1 | tee /tmp/npm.log
+          fi
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            # Đưa lỗi lên annotation để đọc được ngay trên trang PR
+            msg=$(grep -E 'npm (error|ERR)' /tmp/npm.log | tail -20 | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=npm install failed::${msg}"
+          fi
+          exit "$status"
+
+      # Sinh next-env.d.ts và type cho route (file này bị gitignore)
+      - name: Generate Next.js types
+        run: npx next typegen
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit & integration tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

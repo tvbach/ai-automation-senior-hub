@@ -75,7 +75,7 @@ export const phase1Lessons: Lesson[] = [
       }
     ],
     "exercise": {
-      "task": "Chọn một tính năng trong dự án Next.js gần nhất của bạn (ví dụ đăng ký tài khoản). Liệt kê 10 trường hợp cần kiểm tra và phân loại từng trường hợp vào static / unit / integration / e2e, kèm 1 câu lý do.",
+      "task": "Chọn một tính năng trong một web app bạn quen thuộc (ví dụ đăng ký tài khoản). Liệt kê 10 trường hợp cần kiểm tra và phân loại từng trường hợp vào static / unit / integration / e2e, kèm 1 câu lý do.",
       "steps": [
         "Viết ra 10 hành vi hoặc rủi ro (email sai định dạng, trùng email, mật khẩu yếu, gửi mail xác nhận…).",
         "Với mỗi hành vi, hỏi: tầng **thấp nhất** nào bắt được lỗi này?",
@@ -238,17 +238,17 @@ export const phase1Lessons: Lesson[] = [
       }
     ],
     "exercise": {
-      "task": "Trong repo `ai-automation-senior-hub` của bạn (đã deploy trên Vercel), thêm workflow chạy 1 test Playwright kiểm tra trang chủ có heading \"Senior Automation Test AI\" trên mỗi preview deploy.",
+      "task": "Trong một web app bạn có quyền sửa và đã deploy có preview theo PR (ví dụ trên Vercel hoặc Netlify), thêm workflow chạy 1 test Playwright kiểm tra trang chủ hiển thị heading chính trên mỗi preview deploy.",
       "steps": [
         "Cài `@playwright/test` và tạo `playwright.config.ts` như ví dụ 1.",
         "Viết `e2e/home.spec.ts` dùng `page.goto('/')` và `getByRole('heading')`.",
         "Thêm workflow ví dụ 2, mở một PR nhỏ và xem check chạy trên PR."
       ],
-      "hint": "Heading chính dùng `{ level: 1 }`: `page.getByRole('heading', { level: 1 })`, rồi `toContainText('Senior Automation Test AI')`.",
+      "hint": "Heading chính dùng `{ level: 1 }`: `page.getByRole('heading', { level: 1 })`, rồi `toBeVisible()` — hoặc `toContainText(...)` với nội dung heading thật của app.",
       "solution": {
         "title": "e2e/home.spec.ts",
         "language": "ts",
-        "code": "import { test, expect } from \"@playwright/test\";\n\ntest(\"trang chủ hiển thị mục tiêu lộ trình\", async ({ page }) => {\n  await page.goto(\"/\");\n  await expect(page.getByRole(\"heading\", { level: 1 })).toContainText(\"Senior Automation Test AI\");\n});"
+        "code": "import { test, expect } from \"@playwright/test\";\n\ntest(\"trang chủ hiển thị mục tiêu lộ trình\", async ({ page }) => {\n  await page.goto(\"/\");\n  await expect(page.getByRole(\"heading\", { level: 1 })).toBeVisible();\n});"
       }
     },
     "checklist": [

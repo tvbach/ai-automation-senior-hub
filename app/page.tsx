@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { ArrowRight, ChevronRight, MessagesSquare, Sparkles } from "lucide-react";
-import { interviewQuestions, phases, profile, questionCategories } from "@/data/content";
+import { interviewQuestions, phases, questionCategories, skills } from "@/data/content";
+import { phaseEstimatedHours } from "@/lib/curriculum";
 import { ContinueLearning, LiveStats } from "@/components/dashboard/live-stats";
 import { PhaseTabs } from "@/components/dashboard/phase-tabs";
 import { LiveProgress } from "@/components/progress/live-progress";
 import { Eyebrow } from "@/components/ui/primitives";
 
 export default function DashboardPage() {
-  const totalWeeks = phases.reduce((sum, p) => sum + p.durationWeeks, 0);
+  const estimatedHours = Object.fromEntries(phases.map((p) => [p.id, phaseEstimatedHours(p)]));
+  const totalHours = Object.values(estimatedHours).reduce((sum, h) => sum + h, 0);
 
   return (
     <div className="space-y-14">
@@ -18,19 +20,24 @@ export default function DashboardPage() {
           <div>
             <Eyebrow>{"// dashboard"}</Eyebrow>
             <h1 id="hero-title" className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-              Từ Senior Full-stack đến <span className="text-accent-soft">Senior Automation Test AI</span>
+              Lộ trình <span className="text-accent-soft">QA Automation, SDET & AI-Driven Testing</span>
             </h1>
             <p className="mt-4 max-w-2xl text-ink-muted text-pretty">
-              Lộ trình {totalWeeks} tuần chia 3 giai đoạn: kiến trúc test có thể scale, đưa AI vào toàn bộ vòng đời QA,
-              và vận hành chất lượng ở quy mô enterprise.
+              Hiện có {phases.length} giai đoạn nâng cao (~{totalHours} giờ học và thực hành): kiến trúc test có thể scale,
+              đưa AI vào vòng đời QA và vận hành chất lượng ở quy mô enterprise. Học theo thứ tự gợi ý hoặc chọn
+              đúng kỹ năng bạn cần; các giai đoạn nền tảng cho người mới đang được bổ sung.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {profile.stack.map((s) => (
-                <span key={s} className="rounded-md border border-line bg-surface px-2 py-1 font-mono text-xs text-ink-muted">
-                  {s}
-                </span>
+            <ul className="mt-5 flex flex-wrap gap-2" aria-label="Kỹ năng trong lộ trình">
+              {skills.map((s) => (
+                <li
+                  key={s.id}
+                  title={s.description}
+                  className="rounded-md border border-line bg-surface px-2 py-1 font-mono text-xs text-ink-muted"
+                >
+                  {s.title}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
           <ContinueLearning />
@@ -50,7 +57,7 @@ export default function DashboardPage() {
         <div>
           <Eyebrow>{"// roadmap"}</Eyebrow>
           <h2 id="roadmap-title" className="mt-2 text-2xl font-semibold tracking-tight">
-            3 giai đoạn chính
+            {phases.length} giai đoạn
           </h2>
         </div>
 
@@ -65,7 +72,7 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs text-accent-soft">PHASE 0{p.order}</span>
-                    <span className="font-mono text-xs text-ink-faint">{p.durationWeeks} tuần</span>
+                    <span className="font-mono text-xs text-ink-faint">~{estimatedHours[p.id]} giờ</span>
                   </div>
                   <h3 className="mt-3 font-semibold leading-snug">{p.title}</h3>
                   <p className="mt-2 line-clamp-3 flex-1 text-sm text-ink-muted">{p.tagline}</p>
@@ -82,7 +89,7 @@ export default function DashboardPage() {
           })}
         </ol>
 
-        <PhaseTabs phases={phases} />
+        <PhaseTabs phases={phases} estimatedHours={estimatedHours} />
       </section>
 
       {/* -------------------------------------------------- Interview CTA */}

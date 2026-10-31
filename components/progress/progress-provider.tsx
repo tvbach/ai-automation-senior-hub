@@ -5,6 +5,7 @@ import type { TopicStatus } from "@/data/content";
 import {
   emptyProgress,
   localDay,
+  MAX_ATTEMPTS,
   mergeProgress,
   sameProgress,
   sanitizeProgress,
@@ -17,7 +18,9 @@ import {
  * - Đồng bộ lên /api/progress (debounce) khi server bật sync và có PIN
  */
 
-const LS_STATE = "hub.progress.v1";
+const LS_STATE = "hub.progress.v2";
+/** Key của schema v1 — chỉ đọc để migrate, giữ nguyên làm bản sao lưu khi cần rollback */
+const LS_STATE_LEGACY = "hub.progress.v1";
 const LS_PIN = "hub.pin.v1";
 const SAVE_DEBOUNCE_MS = 900;
 
@@ -131,8 +134,11 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     let local = emptyProgress();
     try {
-      const raw = lsGet(LS_STATE);
+      const current = lsGet(LS_STATE);
+      const raw = current ?? lsGet(LS_STATE_LEGACY);
       if (raw) local = sanitizeProgress(JSON.parse(raw));
+      // Lần đầu sau khi nâng cấp: lưu bản đã migrate sang key v2 ngay
+      if (raw && !current) lsSet(LS_STATE, JSON.stringify(local));
     } catch {
       /* dữ liệu local hỏng → bắt đầu lại */
     }
@@ -207,7 +213,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       const now = Date.now();
       update((s) => ({
         ...s,
-        attempts: [...s.attempts, { questionId, score: Math.round(score), at: now }].slice(-300),
+        attempts: [...s.attempts, { questionId, score: Math.round(score), at: now }].slice(-MAX_ATTEMPTS),
         activity: [...new Set([...s.activity, localDay(now)])].sort(),
       }));
     },
