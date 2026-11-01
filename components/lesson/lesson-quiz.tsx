@@ -56,8 +56,8 @@ export function LessonQuiz({ topicId, questions }: { topicId: string; questions:
           const outcome = result?.results[qi];
           return (
             <li key={q.id}>
-              <fieldset className="space-y-2.5 rounded-xl border border-line p-4">
-                <legend className="px-1 text-sm font-medium text-ink">
+              <fieldset className="min-w-0 space-y-2.5 rounded-xl border border-line p-4">
+                <legend className="max-w-full px-1 text-sm font-medium text-ink [overflow-wrap:anywhere]">
                   <span className="mr-1.5 font-mono text-xs text-accent-soft">Câu {qi + 1}.</span>
                   <RichText text={q.prompt} />
                 </legend>
@@ -91,7 +91,7 @@ export function LessonQuiz({ topicId, questions }: { topicId: string; questions:
                           onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: o.id }))}
                           className="mt-0.5 size-4 shrink-0 accent-[var(--color-accent)]"
                         />
-                        <span className="flex-1">
+                        <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
                           <RichText text={o.text} />
                         </span>
                         {submitted && isAnswer && (

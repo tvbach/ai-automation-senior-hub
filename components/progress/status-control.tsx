@@ -12,7 +12,11 @@ const OPTIONS: { value: TopicStatus; label: string; icon: typeof CircleCheck; ac
   { value: "done", label: "Hoàn thành", icon: CircleCheck, active: "bg-ok/10 text-ok ring-1 ring-ok/40" },
 ];
 
-/** Segmented control đổi trạng thái 1 topic */
+/**
+ * Segmented control đổi trạng thái 1 topic.
+ * Lưới 3 cột bằng nhau nên không bao giờ tràn khung, kể cả màn hình 320px hay cỡ chữ
+ * hệ thống lớn: trên mobile icon nằm trên chữ và chữ được xuống dòng.
+ */
 export function StatusControl({ topicId, topicTitle, size = "md" }: { topicId: string; topicTitle: string; size?: "sm" | "md" }) {
   const { state, hydrated, setTopicStatus } = useProgress();
   const current = topicStatus(state, topicId);
@@ -21,7 +25,10 @@ export function StatusControl({ topicId, topicTitle, size = "md" }: { topicId: s
     <div
       role="radiogroup"
       aria-label={`Trạng thái: ${topicTitle}`}
-      className={cn("inline-flex w-full rounded-xl border border-line bg-surface p-1 sm:w-auto", !hydrated && "opacity-60")}
+      className={cn(
+        "grid w-full grid-cols-3 gap-1 rounded-xl border border-line bg-surface p-1 sm:inline-grid sm:w-auto sm:grid-cols-[repeat(3,auto)]",
+        !hydrated && "opacity-60",
+      )}
     >
       {OPTIONS.map(({ value, label, icon: Icon, active }) => {
         const selected = hydrated && current === value;
@@ -34,13 +41,15 @@ export function StatusControl({ topicId, topicTitle, size = "md" }: { topicId: s
             disabled={!hydrated}
             onClick={() => setTopicStatus(topicId, value)}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2.5 font-medium whitespace-nowrap transition-colors duration-150 sm:flex-none",
-              size === "sm" ? "min-h-9 text-xs" : "min-h-10 text-sm",
+              // Mobile: icon trên, chữ dưới, được xuống dòng; từ sm: một hàng như cũ
+              "flex min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1.5 py-1.5 text-center font-medium leading-tight transition-colors duration-150",
+              "sm:flex-row sm:gap-1.5 sm:px-2.5 sm:py-0 sm:whitespace-nowrap",
+              size === "sm" ? "min-h-11 text-xs sm:min-h-9" : "min-h-12 text-sm sm:min-h-10",
               selected ? active : "text-ink-muted hover:text-ink",
             )}
           >
-            <Icon className="size-4" aria-hidden />
-            {label}
+            <Icon className="size-4 shrink-0" aria-hidden />
+            <span className="max-w-full [overflow-wrap:anywhere]">{label}</span>
           </button>
         );
       })}

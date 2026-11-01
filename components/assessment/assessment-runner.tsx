@@ -185,9 +185,9 @@ export function AssessmentRunner() {
           <ProgressBar value={((step + 1) / total) * 100} label="Tiến độ làm bài" />
         </div>
 
-        <fieldset className="space-y-3 rounded-2xl border border-line bg-surface p-5 shadow-sm shadow-slate-900/[0.03] sm:p-6">
+        <fieldset className="min-w-0 space-y-3 rounded-2xl border border-line bg-surface p-5 shadow-sm shadow-slate-900/[0.03] sm:p-6">
           <legend className="sr-only">Câu hỏi {step + 1}</legend>
-          <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold leading-snug outline-none">
+          <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold leading-snug outline-none [overflow-wrap:anywhere]">
             <RichText text={q.prompt} />
           </h2>
           <div className="space-y-2">
@@ -212,7 +212,7 @@ export function AssessmentRunner() {
                     onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: o.id }))}
                     className="mt-0.5 size-4 shrink-0 accent-[var(--color-accent)]"
                   />
-                  <span>
+                  <span className="min-w-0 [overflow-wrap:anywhere]">
                     <RichText text={o.text} />
                   </span>
                 </label>
