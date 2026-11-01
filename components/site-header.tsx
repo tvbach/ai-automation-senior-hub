@@ -37,17 +37,17 @@ export function SiteHeader() {
                   <Link
                     href={href}
                     aria-current={active ? "page" : undefined}
+                    title={short}
                     className={cn(
-                      "flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium transition-colors duration-200",
+                      "flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium transition-colors duration-200 sm:min-h-10 sm:justify-start",
                       active
                         ? "bg-accent text-white shadow-sm shadow-accent/30"
                         : "text-ink-muted hover:bg-surface-raised hover:text-ink",
                     )}
                   >
-                    <Icon className="size-4" aria-hidden />
-                    <span className="hidden sm:inline">{label}</span>
-                    {/* Màn hình hẹp: chỉ mục đang mở hiện chữ, các mục khác chỉ còn icon */}
-                    <span className={cn("sm:hidden", !active && "sr-only")}>{short}</span>
+                    <Icon className="size-4 shrink-0" aria-hidden />
+                    {/* Điện thoại: chỉ icon (tên vẫn được đọc bởi screen reader) để header không tràn khi cỡ chữ lớn */}
+                    <span className="sr-only sm:not-sr-only">{label}</span>
                   </Link>
                 </li>
               );
